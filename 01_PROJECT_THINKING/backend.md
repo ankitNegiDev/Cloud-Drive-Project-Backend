@@ -236,3 +236,8 @@
     ```text
     request is pingeed to server sucessfully
     ```
+
+---
+
+* next -- do define api routes -- for auth , user , file ,folder , shared routes and search one.
+* authRoutes.js ,userRoutes.js,fileRoutes.js,folderRoutes.js,shareRoutes.js,searchRoutes.js
