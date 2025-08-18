@@ -268,6 +268,15 @@
     Frontend stores session token → uses it for API calls (or any protected api routes)
     ```
 
+* or we can say like this
+
+    ```text
+    User signs up → Supabase creates user → frontend redirected to login
+    User logs in → Supabase returns session (access_token) → frontend stores token
+    Frontend calls protected API → sends token in headers
+    Backend authMiddleware verifies token → request allowed or rejected
+    ```
+
 * now for auth we have a seprate router -- authRouter that will handel only signup and login request -- we will see for password reset -- in future weather to put here or in userRouter.
 * now we will also create a auth middleware so that we can protect our routes.
 
