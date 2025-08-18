@@ -25,3 +25,28 @@ export async function signupService(email,password){
         throw error; 
     }
 }
+
+
+// login service 
+
+export async function loginService(email,password){
+    try{
+        const {data,error}=await supabase.auth.signInWithPassword({email,password});
+
+        // incase if error occur
+        if(error){
+            const err=new Error("sorry there is some issue with supabase.auth.signInWithPassword");
+            err.message=error.message;
+            err.status=404;
+            throw err;
+        }
+
+        // if no error then
+        return data;
+    }catch(error){
+        console.log("error occured in the login service and error is : ",error);
+        
+        // throwing error back to controller.
+        throw error;
+    }
+}

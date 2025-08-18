@@ -420,4 +420,192 @@
 
 * ## loged in / sign in
 
-  * for sign in the api will be `http://localhost:3000/api/auth/login`
+  * for sign in the api will be `http://localhost:3000/api/auth/login` then request will be accepted by the controller and it will call service layer..
+  * and the routes will look like this
+
+    ```js
+    import express from 'express';
+    import { loginController, signupController } from '../controller/authController.js';
+
+    const authRouter=express.Router();
+
+    // route for signup
+    authRouter.post('/singup', signupController);
+
+    // route for login or sign in
+    authRouter.post('/login', loginController);
+
+    export default authRouter;
+    ```
+
+  * and the controller will look like this
+
+    ```js
+
+    // login controller 
+
+    export async function loginController(req,res){
+        try{
+            const {email,password}=req.body;
+
+            // calling service layer
+            const data=await loginService(email,password);
+
+            return res.status(200).json({
+                success:true,
+                message:"Congratulasation user logedIn successfully",
+                response:data
+            });
+
+        }catch(error){
+            return res.status(error.status || 500).json({
+                success:true,
+                message:error.message || "internal server error - user failed to login"
+            })
+        }
+    }
+    ```
+
+  * and service will look like this where we are calling the `supabase.auth.signInWithPassword()` an inbuilt function of supabase for login
+
+    ```js
+
+    // login service 
+    export async function loginService(email,password){
+        try{
+            const {data,error}=await supabase.auth.signInWithPassword({email,password});
+
+            // incase if error occur
+            if(error){
+                const err=new Error("sorry there is some issue with supabase.auth.signInWithPassword");
+                err.message=error.message;
+                err.status=404;
+                throw err;
+            }
+
+            // if no error then
+            return data;
+        }catch(error){
+            console.log("error occured in the login service and error is : ",error);
+            
+            // throwing error back to controller.
+            throw error;
+        }
+    }
+    ```
+
+  * if the user is loged in successfully but before that supabase will ask for the confirm email so we created a home route so that our email get verifyed.
+
+    ```js
+
+    // this route is imp for email confirmation -- 
+    app.get('/', (req, res) => {
+        res.send('<h1>Welcome to Cloud Drive API</h1>');
+    });
+    ```
+
+  * and the response will be like this
+
+    ```json
+    {
+        "success": true,
+        "message": "Congratulasation user logedIn successfully",
+        "response": {
+            "user": {
+                "id": "0158b4c3-69e0-4123-a2d7-575a90bc5457",
+                "aud": "authenticated",
+                "role": "authenticated",
+                "email": "bingolive9104@gmail.com",
+                "email_confirmed_at": "2025-08-18T14:57:26.839722Z",
+                "phone": "",
+                "confirmation_sent_at": "2025-08-18T14:56:57.509695Z",
+                "confirmed_at": "2025-08-18T14:57:26.839722Z",
+                "last_sign_in_at": "2025-08-18T15:00:16.892342468Z",
+                "app_metadata": {
+                    "provider": "email",
+                    "providers": [
+                        "email"
+                    ]
+                },
+                "user_metadata": {
+                    "email": "bingolive9104@gmail.com",
+                    "email_verified": true,
+                    "phone_verified": false,
+                    "sub": "0158b4c3-69e0-4123-a2d7-575a90bc5457"
+                },
+                "identities": [
+                    {
+                        "identity_id": "cfbb406c-eb62-403a-95f9-404ad3fb86ef",
+                        "id": "0158b4c3-69e0-4123-a2d7-575a90bc5457",
+                        "user_id": "0158b4c3-69e0-4123-a2d7-575a90bc5457",
+                        "identity_data": {
+                            "email": "bingolive9104@gmail.com",
+                            "email_verified": true,
+                            "phone_verified": false,
+                            "sub": "0158b4c3-69e0-4123-a2d7-575a90bc5457"
+                        },
+                        "provider": "email",
+                        "last_sign_in_at": "2025-08-18T14:56:57.497842Z",
+                        "created_at": "2025-08-18T14:56:57.49792Z",
+                        "updated_at": "2025-08-18T14:56:57.49792Z",
+                        "email": "bingolive9104@gmail.com"
+                    }
+                ],
+                "created_at": "2025-08-18T14:56:57.477651Z",
+                "updated_at": "2025-08-18T15:00:16.897196Z",
+                "is_anonymous": false
+            },
+            "session": {
+                "access_token": "eyJhbGciOiJIUzI1NiIsImtpZCI6InJ1WVhNQWlvdllGT3FkZzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2p3Z3V2d2x0ZGFzZm95ZWNubHJvLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIwMTU4YjRjMy02OWUwLTQxMjMtYTJkNy01NzVhOTBiYzU0NTciLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzU1NTMyODE2LCJpYXQiOjE3NTU1MjkyMTYsImVtYWlsIjoiYmluZ29saXZlOTEwNEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiYmluZ29saXZlOTEwNEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiIwMTU4YjRjMy02OWUwLTQxMjMtYTJkNy01NzVhOTBiYzU0NTcifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1NTUyOTIxNn1dLCJzZXNzaW9uX2lkIjoiMjlmNGY1MGItZTA4Mi00NWU0LTgyOTMtYmNiMDQ5MTYxOTk4IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.BJjpO8rpMvFjXv0OthnzXgTbpda-ETm15xMve9WzgHA",
+                "token_type": "bearer",
+                "expires_in": 3600,
+                "expires_at": 1755532816,
+                "refresh_token": "abawannzjlkp",
+                "user": {
+                    "id": "0158b4c3-69e0-4123-a2d7-575a90bc5457",
+                    "aud": "authenticated",
+                    "role": "authenticated",
+                    "email": "bingolive9104@gmail.com",
+                    "email_confirmed_at": "2025-08-18T14:57:26.839722Z",
+                    "phone": "",
+                    "confirmation_sent_at": "2025-08-18T14:56:57.509695Z",
+                    "confirmed_at": "2025-08-18T14:57:26.839722Z",
+                    "last_sign_in_at": "2025-08-18T15:00:16.892342468Z",
+                    "app_metadata": {
+                        "provider": "email",
+                        "providers": [
+                            "email"
+                        ]
+                    },
+                    "user_metadata": {
+                        "email": "bingolive9104@gmail.com",
+                        "email_verified": true,
+                        "phone_verified": false,
+                        "sub": "0158b4c3-69e0-4123-a2d7-575a90bc5457"
+                    },
+                    "identities": [
+                        {
+                            "identity_id": "cfbb406c-eb62-403a-95f9-404ad3fb86ef",
+                            "id": "0158b4c3-69e0-4123-a2d7-575a90bc5457",
+                            "user_id": "0158b4c3-69e0-4123-a2d7-575a90bc5457",
+                            "identity_data": {
+                                "email": "bingolive9104@gmail.com",
+                                "email_verified": true,
+                                "phone_verified": false,
+                                "sub": "0158b4c3-69e0-4123-a2d7-575a90bc5457"
+                            },
+                            "provider": "email",
+                            "last_sign_in_at": "2025-08-18T14:56:57.497842Z",
+                            "created_at": "2025-08-18T14:56:57.49792Z",
+                            "updated_at": "2025-08-18T14:56:57.49792Z",
+                            "email": "bingolive9104@gmail.com"
+                        }
+                    ],
+                    "created_at": "2025-08-18T14:56:57.477651Z",
+                    "updated_at": "2025-08-18T15:00:16.897196Z",
+                    "is_anonymous": false
+                }
+            }
+        }
+    }
+    ```

@@ -50,3 +50,10 @@ app.get('/test', async function callback(req,res){
         res.status(500).json({ success: false, message: error.message });
     }
 })
+
+
+// this route is imp for email confirmation -- 
+
+app.get('/', (req, res) => {
+    res.send('<h1>Welcome to Cloud Drive API</h1>');
+});
