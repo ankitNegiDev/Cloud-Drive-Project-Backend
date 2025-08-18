@@ -609,3 +609,12 @@
         }
     }
     ```
+
+* auth middleware is left -- here
+* if time allows -- put reset password and forget password and update password also --(check flow first)
+* **for reset** -- flow will be user will put email -- then a call to supabase -- and user set new password. `User enters email → backend calls supabase.auth.resetPasswordForEmail(email) → user gets a link. and user set new password`
+* **for update** -- flow will be user should be loged in -- means protected route -- and we will ask user to write current and new pass and then call supabase for update password. `User provides current password + new password (or just token + new password if using session). Backend calls supabase.auth.updateUser({ password: newPassword }).`
+
+---
+
+* next task ----> user routes , file routes , folder roues , share routes , search routes
