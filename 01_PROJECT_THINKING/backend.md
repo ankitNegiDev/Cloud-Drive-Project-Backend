@@ -241,3 +241,32 @@
 
 * next -- do define api routes -- for auth , user , file ,folder , shared routes and search one.
 * authRoutes.js ,userRoutes.js,fileRoutes.js,folderRoutes.js,shareRoutes.js,searchRoutes.js
+
+---
+
+## Authentication and autherisization using supabase
+
+* now to do authentication - `Authentication` is a process of verifying the user identity.
+* `Autherisization` is a process to verify weather the user is allowed to do certain task or not.
+* now since supabase has its own pre-defined tables for the auth so we can start with directly coding.
+* now so far what i understand is - supabase does the fully authentication part but when it comes to autherisization we need to check like which route we want to protected or not and for that we need to create custom auth middleware that check for token either it is being sent from client side or not..
+* and inorder to give social login we need to integreate it in frontend using supabase..
+
+* this is how the flow will work.
+
+    ```text
+    User clicks "Login with Google" button
+        ↓
+    Frontend calls supabase.auth.signInWithOAuth({ provider: "google" })
+        ↓
+    Supabase redirects to Google Auth page
+        ↓
+    User logs in with Google → redirected back to our frontend
+        ↓
+    Supabase creates user in auth.users table + generates JWT session
+        ↓
+    Frontend stores session token → uses it for API calls (or any protected api routes)
+    ```
+
+* now for auth we have a seprate router -- authRouter that will handel only signup and login request -- we will see for password reset -- in future weather to put here or in userRouter.
+* now we will also create a auth middleware so that we can protect our routes.

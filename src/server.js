@@ -5,6 +5,7 @@ import express, { response } from 'express';
 import cors from 'cors';
 import { PORT } from './config/serverConfig.js';
 import { supabase } from './config/supabaseClient.js';
+import apiRouter from './routes/apiRoutes.js';
 const app=express();
 
 // using cors
@@ -17,6 +18,10 @@ app.use(cors({
 app.use(express.json()); // parse json data
 app.use(express.text()); // parse plane text or incoming plane text payload
 app.use(express.urlencoded({extended:true})); // parse form submission
+
+// using /api router 
+app.use('/api',apiRouter);
+
 
 app.listen(PORT,function callback(){
     console.log("server is listening on port : ",PORT);
