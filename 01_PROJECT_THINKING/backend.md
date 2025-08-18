@@ -417,3 +417,7 @@
         }
     }
     ```
+
+* ## loged in / sign in
+
+  * for sign in the api will be `http://localhost:3000/api/auth/login`
