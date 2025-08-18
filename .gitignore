@@ -1,0 +1,3 @@
+# Ignore all node_modules in the project, including nested ones
+**/node_modules
+.env
