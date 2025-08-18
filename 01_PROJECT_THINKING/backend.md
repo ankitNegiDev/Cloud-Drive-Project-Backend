@@ -63,3 +63,29 @@
     ```
 
 * Although we are using Supabase for Auth/Storage/DB, but I wrapped it with a custom backend architecture so that i could show my understanding of backend development (routes, controllers, services) etc.
+
+---
+
+## Starting with setting up supabase
+
+* now we are going to setup the supabase.
+* headover to this link [supabase official](https://supabase.com/)
+
+* ### Step 1 Create a Supabase Project
+
+  * Choose organization & project name and Supabase will automatically create a Postgres DB + Auth + Storage for us.
+
+* ### Step 2 Get your API keys
+
+  * In our Supabase dashboard → go to Project Settings → API Keys.
+  * Now we will see two important keys:
+    * `anon key` → for client-side usage (public).
+    * `service_role key` → for backend only (has full access Never ever exposed it put it in .env).
+    * ![screenshot attached](./supabase%20project%20setup.png)
+  * now store these keys in the .env file like this --
+
+    ```env
+    SUPABASE_URL=https://your-project.supabase.co // copy it from the url bar.
+    SUPABASE_ANON_KEY=your-anon-key
+    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+    ```
