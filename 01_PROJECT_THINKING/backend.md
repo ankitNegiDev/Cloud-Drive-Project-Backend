@@ -270,3 +270,141 @@
 
 * now for auth we have a seprate router -- authRouter that will handel only signup and login request -- we will see for password reset -- in future weather to put here or in userRouter.
 * now we will also create a auth middleware so that we can protect our routes.
+
+* ## signup
+
+  * for this the api will be `http://localhost:3000/api/auth/signup` and the auth router will hit the get request and the routes will look like this.
+
+    ```js
+    import express from 'express';
+    import { signupController } from '../controller/authController.js';
+
+    const authRouter=express.Router();
+
+    authRouter.get('/singup', signupController);
+
+
+
+    export default authRouter;
+    ```
+
+  * now the request will be accepted by the controller layer and it will call the service layer
+  * and the signup controller will look like this.
+
+    ```js
+    // auth controller -- that will accept signup and login request....
+
+    import { signupService } from "../service/authService.js";
+
+    // signup controller.
+
+    export async function signupController (req,res){
+        try {
+            // destructuring req.body to get email and password.
+            const {email,password}=req.body;
+            
+            // calling the service layer for signup
+            const data = await signupService (email,password);
+            return res.status(200).json({
+                success:true,
+                message: "User signedUp successfully",
+                response: data
+            });
+        }catch(error){
+            console.log("error occured in the signup controller and error is : ",error);
+            return res.status(error.status || 500).json({
+                success:false,
+                message: error.message || "User failed to do signUp"
+            });
+        }
+    }
+    ```
+
+  * next this function will call the service layer and wait for the response since we are using async function.
+  * now the service layer is responsible for calling the signup function of supabase.
+  * and the signupService will look like this.
+
+    ```js
+    // auth service that will handel -- communicating with the supabase for the user signup and login.
+
+    import { supabase } from "../config/supabaseClient.js";
+
+    // here we need to import supabase from supabaseClient that we setup and this supabase object will have different function that we will use for singup and login.
+
+    export async function signupService(email,password){
+        try{
+            // calling supabase internal function for signup.
+            const {data,error}=await supabase.auth.signUp({email,password}); 
+
+            // in case if error occur
+            if(error){
+                const err=new Error("sorry there is some issue with supabase.auth.singUp");
+                err.status=404;
+                err.message=error.message;
+                throw err;
+            }
+
+            // if no error then 
+            return data;
+        }catch(error){
+            console.log("erorr occured in the singup service layer and error is : ",error);
+            // throwing error back to controller.
+            throw error; 
+        }
+    }
+    ```
+
+  * based on the response either it is valid or not the response or error will be thrown to controller and then based on it the controller will return the data or error to user as a response and this is how the flow will go.
+
+  * and the response will be like this if we hit this api `http://localhost:3000/api/auth/signup`
+
+    ```json
+    {
+        "success": true,
+        "message": "User signedUp successfully",
+        "response": {
+            "user": {
+                "id": "6f45fc9c-c9ec-40e4-b979-6c539ddf77ae",
+                "aud": "authenticated",
+                "role": "authenticated",
+                "email": "love123@gmail.com",
+                "phone": "",
+                "confirmation_sent_at": "2025-08-18T14:32:05.172130748Z",
+                "app_metadata": {
+                    "provider": "email",
+                    "providers": [
+                        "email"
+                    ]
+                },
+                "user_metadata": {
+                    "email": "love123@gmail.com",
+                    "email_verified": false,
+                    "phone_verified": false,
+                    "sub": "6f45fc9c-c9ec-40e4-b979-6c539ddf77ae"
+                },
+                "identities": [
+                    {
+                        "identity_id": "482392d4-5578-4b91-bc6c-7f436c529c38",
+                        "id": "6f45fc9c-c9ec-40e4-b979-6c539ddf77ae",
+                        "user_id": "6f45fc9c-c9ec-40e4-b979-6c539ddf77ae",
+                        "identity_data": {
+                            "email": "love123@gmail.com",
+                            "email_verified": false,
+                            "phone_verified": false,
+                            "sub": "6f45fc9c-c9ec-40e4-b979-6c539ddf77ae"
+                        },
+                        "provider": "email",
+                        "last_sign_in_at": "2025-08-18T14:24:36.531131Z",
+                        "created_at": "2025-08-18T14:24:36.531204Z",
+                        "updated_at": "2025-08-18T14:24:36.531204Z",
+                        "email": "love123@gmail.com"
+                    }
+                ],
+                "created_at": "2025-08-18T14:24:36.473375Z",
+                "updated_at": "2025-08-18T14:32:08.059689Z",
+                "is_anonymous": false
+            },
+            "session": null
+        }
+    }
+    ```

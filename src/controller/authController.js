@@ -2,9 +2,6 @@
 
 import { signupService } from "../service/authService.js";
 
-
-
-
 // signup controller.
 
 export async function signupController (req,res){
