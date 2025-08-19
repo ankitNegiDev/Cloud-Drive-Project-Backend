@@ -850,6 +850,11 @@
 
 * ### (2) Get folder using parent id as query parameters
 
+  * the api route will be get request on `http://localhost:3000/api/folder` query params..
+  * so when the user open any folder it will show all the files and folder inside it.
+  * Reads all children items of the folder.
+  * and same to show all the content on the root folder we can call our api with folderId for root.
+
   * the api route is `http://localhost:3000/api/folder` or with query parameter if parent id is avilable `http://localhost:3000/api/folder?parentId=abc123` --
   * it will show all the files and folder inside the abc123 parent folder id
   * **see i created first folder as my root folder -- in this folder i am getting parent id -- as null but how i create -- folder inside the root folder** so for this -- just copy the id the root folder and pass it as the parentId in the nested folder so nested folder will have parent id as root folder.
@@ -885,24 +890,36 @@
     }
     ```
 
+* ### (4) Delete (Move to Trash)
+
+  * DELETE `http://localhost:3000/folder/:id` (soft delete → mark is_deleted = true)
+  * Lets user recover later if mistake.
+
+    ```js
+    await supabase
+    .from("items")
+    .update({ is_deleted: true })
+    .eq("id", id)
+    .eq("user_id", userId);
+
+    ```
+
+  * here we are not actually deleting the row from the database.
+  * Instead we are just setting the column is_deleted = true. means that column acts like a “flag” to mark the folder as deleted.
+  * So the folder is still in the table but  the normal folder listing queries should filter it out (e.g., .eq("is_deleted", false) when fetching folders).
+  * we can later restore it by setting is_deleted = false.
+
+---
+
 * ### (2) Upload file
 
   * the api route is post request on `http://localhost:3000/files`
   * so in frontend we will give drag or upload button and when user click upload button our api will hit and Uploads file to cloud (supabase storage) and stores info in DB so it appears in Drive. obiously to show file we need to fetch files from supabase storage..
 
-* ### (3) List Folder Contents
-
-  * the api route will be get request on `http://localhost:3000/items/:folderId`
-  * so when the user open any folder it will show all the files and folder inside it.
-  * Reads all children items of the folder.
-  * and same to show all the content on the root folder we can call our api with folderId for root.
-
-
-
-* ### (5) Delete (Move to Trash)
-
-  * DELETE `/items/:id` (soft delete → mark is_deleted = true)
-  * Lets user recover later if mistake.
+* so we need to create a trash router once we are done with file routes --
+* GET /trash -- to list down all trashed items
+* PATCH /items/:id/restore
+* DELETE /items/:id/permanent
 
 * ### (6) Restore from Trash
 
