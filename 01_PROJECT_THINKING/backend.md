@@ -618,3 +618,86 @@
 ---
 
 * next task ----> user routes , file routes , folder roues , share routes , search routes
+
+---
+
+* for user profile -- we can fetch info directly from provider -- like google , github -- as avatar url else we will create a table if it is needed...
+
+---
+
+## User Routes
+
+* now for user routes we will focus only on basic crud one that are required for mvp.
+* if we later required to add extra info in the user then we can create our own table for user instead of using default supabase one.
+* now for the time being we don't know what supabase store with user beside email and password so first we will try to fetch the user and see what data we get.
+* so we will create the userRouter that will handel all user rest api.
+
+* now to fetch the user -- we had the api --- `http://localhost:3000/api/user/profile` seding get request on it will fetch the user.
+* but make sure in postman we pass the token in the header as key -- Authorization and value --- Bearer token without string format.
+
+```text
+[{"key":"Authorization","value":" Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6InJ1WVhNQWlvdllGT3FkZzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2p3Z3V2d2x0ZGFzZm95ZWNubHJvLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI2M2MyNTQwOC0zY2I4LTRiMGItYThkMy1kN2JkZGQwODIwODEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzU1NTg1MTU3LCJpYXQiOjE3NTU1ODE1NTcsImVtYWlsIjoiYmluZ29saXZlOTEwNEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsIjoiYmluZ29saXZlOTEwNEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI2M2MyNTQwOC0zY2I4LTRiMGItYThkMy1kN2JkZGQwODIwODEifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc1NTU4MTU1N31dLCJzZXNzaW9uX2lkIjoiOWI1NTE3NDYtOGE3NS00YmYzLWJkMDEtMTc4ZDBjMDk1ZjcwIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.luPQZLQPhYvsp79DY67N0vCk5NRA2VywJ3FdM6EwQwo","description":"","type":"text","uuid":"e9ed158c-eee9-40a9-8f6c-21d9393f505c","enabled":true}]
+```
+
+* and the response we got is --
+
+    ```json
+    {
+        "success": true,
+        "message": "User profile fetched successfully",
+        "response": {
+            "user": {
+                "id": "63c25408-3cb8-4b0b-a8d3-d7bddd082081",
+                "aud": "authenticated",
+                "role": "authenticated",
+                "email": "bingolive9104@gmail.com",
+                "email_confirmed_at": "2025-08-19T05:32:05.927276Z",
+                "phone": "",
+                "confirmation_sent_at": "2025-08-19T05:31:38.713502Z",
+                "confirmed_at": "2025-08-19T05:32:05.927276Z",
+                "last_sign_in_at": "2025-08-19T05:32:37.710127Z",
+                "app_metadata": {
+                    "provider": "email",
+                    "providers": [
+                        "email"
+                    ]
+                },
+                "user_metadata": {
+                    "email": "bingolive9104@gmail.com",
+                    "email_verified": true,
+                    "phone_verified": false,
+                    "sub": "63c25408-3cb8-4b0b-a8d3-d7bddd082081"
+                },
+                "identities": [
+                    {
+                        "identity_id": "e740d38a-e263-4285-8378-808a4fc22427",
+                        "id": "63c25408-3cb8-4b0b-a8d3-d7bddd082081",
+                        "user_id": "63c25408-3cb8-4b0b-a8d3-d7bddd082081",
+                        "identity_data": {
+                            "email": "bingolive9104@gmail.com",
+                            "email_verified": true,
+                            "phone_verified": false,
+                            "sub": "63c25408-3cb8-4b0b-a8d3-d7bddd082081"
+                        },
+                        "provider": "email",
+                        "last_sign_in_at": "2025-08-19T05:31:38.703365Z",
+                        "created_at": "2025-08-19T05:31:38.703418Z",
+                        "updated_at": "2025-08-19T05:31:38.703418Z",
+                        "email": "bingolive9104@gmail.com"
+                    }
+                ],
+                "created_at": "2025-08-19T05:31:38.685185Z",
+                "updated_at": "2025-08-19T05:32:37.71199Z",
+                "is_anonymous": false
+            }
+        }
+    }
+    ```
+
+* by this response we know that -- for extra info we need to create a table and then add the profile table while creating the user -- like at the time of signup and login.
+
+---
+
+## Changes -- we are adding our custom table -- profile for extra user info
+
+* for user name , avatar and may be theme preference -- later we are using the custom profile table and now we have to update our login , signup and user services.
