@@ -911,21 +911,27 @@
 
 ---
 
-* ### (2) Upload file
+## File routes
+
+* ### (1) Upload file
 
   * the api route is post request on `http://localhost:3000/files`
   * so in frontend we will give drag or upload button and when user click upload button our api will hit and Uploads file to cloud (supabase storage) and stores info in DB so it appears in Drive. obiously to show file we need to fetch files from supabase storage..
+
+---
+
+## Trash routes
 
 * so we need to create a trash router once we are done with file routes --
 * GET /trash -- to list down all trashed items
 * PATCH /items/:id/restore
 * DELETE /items/:id/permanent
 
-* ### (6) Restore from Trash
+* ### (1) Restore from Trash
 
   * PATCH `/items/:id/restore`
 
-* ### (7) Permanent Delete
+* ### (2) Permanent Delete
 
   * DELETE `/items/:id/permanent`
 
@@ -937,3 +943,46 @@ and then we can display and download the data like this functionality to user.
 ## Sharing Routes
 
 * for sharing we will create permision table.
+
+---
+
+next -- is file routes - then trash routes , then sharing and searching --
+
+* the file routes will look like this
+
+    ```js
+    // all file routes...
+    import express from "express";
+    import { 
+        uploadFileController, 
+        getFilesController, 
+        renameFileController, 
+        deleteFileController, 
+        getFilePreviewController 
+    } from "../controller/fileController.js";
+    import { authMiddleware } from "../middleware/authMiddleware.js";
+    // import multer -- from multer middleware
+
+    // (1) Upload a file (parent folder is optional)
+    fileRouter.post(
+        '/', 
+        authMiddleware, 
+        upload.single('file'), // 'file' is the key sent from frontend
+        uploadFileController
+    );
+
+    // (2) List files in a folder or root
+    // parentId is optional here and passed as query parameter
+    fileRouter.get('/', authMiddleware, getFilesController);
+
+    // (3) Rename file using id as URL params
+    fileRouter.put('/:id', authMiddleware, renameFileController);
+
+    // (4) Soft delete file (move to Trash) using id as URL params
+    fileRouter.delete('/:id', authMiddleware, deleteFileController);
+
+    // (5) Get signed URL / preview for a file
+    fileRouter.get('/:id/preview', authMiddleware, getFilePreviewController);
+
+    export default fileRouter;
+    ```

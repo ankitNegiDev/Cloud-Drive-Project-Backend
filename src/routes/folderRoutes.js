@@ -6,7 +6,7 @@ import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const folderRouter=express.Router();
 
-// (1) to create a folder
+// (1) to create a folder -- parent id is passed in req.body
 folderRouter.post('/',authMiddleware,createFolderController);
 
 // (2) to get all folders in a parent folder or root
@@ -16,14 +16,14 @@ folderRouter.post('/',authMiddleware,createFolderController);
  *! but this is not supported now in v5 of express os we are using query params.
  */
 
-// get folders (root or inside parent)
+// get folders (root or inside parent)  -- parent id is passed as query parameter
 folderRouter.get('/', authMiddleware, getFoldersController);
 
 
-// (3) rename folder using id --- not parent id
+// (3) rename folder using id as url params --- not parent id
 folderRouter.put("/:id", authMiddleware, renameFolderController);
 
-// (4) delete folder using  id..  --- not parent id
+// (4) delete folder using  id.. as url params  --- not parent id
 folderRouter.delete("/:id", authMiddleware, deleteFolderController);
 
 
