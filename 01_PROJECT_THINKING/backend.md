@@ -768,3 +768,10 @@
 ```
 
 * task - complete user route -- then file , folder ,share , search etc
+
+---
+
+* the routes for update user profile `http://localhost:3000/api/user/profile` put request is done
+* then for deeltion the api route is `http://localhost:3000/api/user/profile` delete request is also done - we will call this from frontend when user click on delete account button that means user want to delete his account.
+
+---
