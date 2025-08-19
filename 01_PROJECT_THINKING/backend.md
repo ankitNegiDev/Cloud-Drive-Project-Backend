@@ -775,3 +775,51 @@
 * then for deeltion the api route is `http://localhost:3000/api/user/profile` delete request is also done - we will call this from frontend when user click on delete account button that means user want to delete his account.
 
 ---
+
+## setup file storage in supabase
+
+* even before writing the files and folder routes setup the storage and check it with a file upload routes..
+
+---
+
+## File and folder routes
+
+* now here we have two option either we choose seprate table but i guess it would become complex in terms of db query and we have to do at least two query every time.
+* so we will create a single table where we will differenciate them using type column.
+
+* now we have to create different routes based on what feature we are giving.
+
+* ### (1) Create Folder
+
+  * the api route will be post request on `http://localhost:3000/folders`
+  * so in frontend we will have a button **create folder** and when user click it we will call our api to create a new folder inside the current folder.
+
+* ### (2) Upload file
+
+  * the api route is post request on `http://localhost:3000/files`
+  * so in frontend we will give drag or upload button and when user click upload button our api will hit and Uploads file to cloud (supabase storage) and stores info in DB so it appears in Drive. obiously to show file we need to fetch files from supabase storage..
+
+* ### (3) List Folder Contents
+
+  * the api route will be get request on `http://localhost:3000/items/:folderId`
+  * so when the user open any folder it will show all the files and folder inside it.
+  * Reads all children items of the folder.
+  * and same to show all the content on the root folder we can call our api with folderId for root.
+
+* ### (4) Rename File/Folder
+
+  * the api route will be PATCH request `/items/:id { name }`
+  * Change name in DB so it updates instantly in frontend.
+
+* ### (5) Delete (Move to Trash)
+
+  * DELETE `/items/:id` (soft delete → mark is_deleted = true)
+  * Lets user recover later if mistake.
+
+* ### (6) Restore from Trash
+
+  * PATCH `/items/:id/restore`
+
+* ### (7) Permanent Delete
+
+  * DELETE `/items/:id/permanent`
