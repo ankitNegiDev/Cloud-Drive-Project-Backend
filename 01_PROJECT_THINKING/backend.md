@@ -706,4 +706,65 @@
 
 ---
 
+## Response of this api -- `http://localhost:3000/api/user/profile` get request
+
+* when the loged in user hit this api the response will be
+
+```json
+{
+    "success": true,
+    "message": "User profile fetched successfully",
+    "response": {
+        "user": {
+            "id": "94f7ad64-bb23-4cdb-b370-5ebfc15777ba",
+            "aud": "authenticated",
+            "role": "authenticated",
+            "email": "bingolive9104@gmail.com",
+            "email_confirmed_at": "2025-08-19T06:44:36.560336Z",
+            "phone": "",
+            "confirmation_sent_at": "2025-08-19T06:42:39.672416Z",
+            "confirmed_at": "2025-08-19T06:44:36.560336Z",
+            "last_sign_in_at": "2025-08-19T06:53:44.107656Z",
+            "app_metadata": {
+                "provider": "email",
+                "providers": [
+                    "email"
+                ]
+            },
+            "user_metadata": {
+                "email": "bingolive9104@gmail.com",
+                "email_verified": true,
+                "phone_verified": false,
+                "sub": "94f7ad64-bb23-4cdb-b370-5ebfc15777ba"
+            },
+            "identities": [
+                {
+                    "identity_id": "8effd9aa-a32f-496c-bd25-406c369e8eb2",
+                    "id": "94f7ad64-bb23-4cdb-b370-5ebfc15777ba",
+                    "user_id": "94f7ad64-bb23-4cdb-b370-5ebfc15777ba",
+                    "identity_data": {
+                        "email": "bingolive9104@gmail.com",
+                        "email_verified": true,
+                        "phone_verified": false,
+                        "sub": "94f7ad64-bb23-4cdb-b370-5ebfc15777ba"
+                    },
+                    "provider": "email",
+                    "last_sign_in_at": "2025-08-19T06:41:10.825282Z",
+                    "created_at": "2025-08-19T06:41:10.825978Z",
+                    "updated_at": "2025-08-19T06:41:10.825978Z",
+                    "email": "bingolive9104@gmail.com"
+                }
+            ],
+            "created_at": "2025-08-19T06:41:10.786869Z",
+            "updated_at": "2025-08-19T06:53:44.115714Z",
+            "is_anonymous": false
+        },
+        "profile": {
+            "full_name": "Ankit Negi",
+            "avatar_url": "https://res.cloudinary.com/dyg3mh5wg/image/upload/v1755585491/main-sample.png"
+        }
+    }
+}
+```
+
 * task - complete user route -- then file , folder ,share , search etc
