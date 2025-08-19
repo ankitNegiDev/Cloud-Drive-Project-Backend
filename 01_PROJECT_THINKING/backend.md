@@ -857,7 +857,7 @@
 
   * DELETE `/items/:id/permanent`
 
-* now we also need to previw the data -- so for that we need a preview route -- like when the user is on home page/root folder then we will show all the files and folder but when user click on any files then this preview route will hit which will generate a signed url -- only for loged in user -- for a certain time -- 
+* now we also need to previw the data -- so for that we need a preview route -- like when the user is on home page/root folder then we will show all the files and folder but when user click on any files then this preview route will hit which will generate a signed url -- only for loged in user -- for a certain time --
 and then we can display and download the data like this functionality to user.
 
 ---

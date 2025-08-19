@@ -1,7 +1,7 @@
 
 // now creating a basic express server setup 
 
-import express, { response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import { PORT } from './config/serverConfig.js';
 import { supabase } from './config/supabaseClient.js';
