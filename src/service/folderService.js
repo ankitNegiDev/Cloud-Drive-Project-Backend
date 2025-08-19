@@ -45,7 +45,27 @@ export async function getFoldersService({parentId,userId}){
             .select("*")
             .eq("user_id", userId)
             .eq("type", "folder")
-            .eq("parent_id", parentId || null);
+            // .eq("parent_id", parentId || null); //! supabase or postgress sql did not use = to check null.
+            [parentId ? "eq" : "is"]("parent_id", parentId || null);
+
+        // or we can do like this
+        /*
+            let query = supabase
+            .from("items")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("type", "folder");
+
+            if (parentId) {
+            // fetch subfolders
+            query = query.eq("parent_id", parentId);
+            } else {
+            // fetch root folders
+            query = query.is("parent_id", null);
+            }
+
+            const { data, error } = await query;
+        */
         
         // in case if error occur
         if(error){
