@@ -815,7 +815,7 @@
     );
     ```
 
-## File and folder routes
+## Folder routes
 
 * now here we have two option either we choose seprate table but i guess it would become complex in terms of db query and we have to do at least two query every time.
 * so we will create a single table where we will differenciate them using type column.
@@ -847,6 +847,17 @@
         }
     }
     ```
+
+* ### (2) Get folder using parent id as query parameters
+
+  * the api route is `http://localhost:3000/api/folder` or with query parameter if parent id is avilable `http://localhost:3000/api/folder?parentId=abc123` --
+  * it will show all the files and folder inside the abc123 parent folder id
+  * **see i created first folder as my root folder -- in this folder i am getting parent id -- as null but how i create -- folder inside the root folder** so for this -- just copy the id the root folder and pass it as the parentId in the nested folder so nested folder will have parent id as root folder.
+
+  * okey id will behave as parent --
+  * but see in frontend most probably we will have a button to create new folder --
+  * now when user created first folder that means it is considered as root folder -- since no folder exist --
+  * and assume user created the root folder and add some file in it and then do some other thing -- but again he want to add a new folder inside the root one folder --- now tell me -- from where we will get the response of our first api call when we create root folder -- if for new folder root is parent then we need root id right ?? so how we will handel it ----- **so the ans is A breadcrumb is a navigation UI pattern that shows the path of folders (or pages) you’ve navigated, like this: `Root Folder > Projects > Project A > Docs`** we have to implement it in frontend... lets see it later
 
 * ### (2) Upload file
 
