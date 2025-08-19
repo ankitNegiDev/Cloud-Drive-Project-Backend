@@ -62,9 +62,11 @@ export async function renameFolderController(req,res){
     try{
         // getting the id
         const { id } = req.params;
+        console.log("id in the rename from the url params is : ",id);
 
         // destructuring req.body
         const {newName}=req.body;
+        console.log("new name is : ",newName);
 
         // getting user id that is attached by auth middleware
         const userId=req.user.id;
@@ -83,7 +85,7 @@ export async function renameFolderController(req,res){
 
         return res.status(error.status || 500).json({
             success:false,
-            message:error.status || "Internal server error - folder is not re-named"
+            message:error.message || "Internal server error - folder is not re-named"
         })
     }
 }

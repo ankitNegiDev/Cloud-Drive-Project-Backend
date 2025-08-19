@@ -859,6 +859,32 @@
   * now when user created first folder that means it is considered as root folder -- since no folder exist --
   * and assume user created the root folder and add some file in it and then do some other thing -- but again he want to add a new folder inside the root one folder --- now tell me -- from where we will get the response of our first api call when we create root folder -- if for new folder root is parent then we need root id right ?? so how we will handel it ----- **so the ans is A breadcrumb is a navigation UI pattern that shows the path of folders (or pages) you’ve navigated, like this: `Root Folder > Projects > Project A > Docs`** we have to implement it in frontend... lets see it later
 
+* ### (3) Rename Folder
+
+  * the api route will be put request `http://localhost:3000/:id` here id is the id of folder that whose name we want to change.
+  * Change name in DB so it updates instantly in frontend.
+  * and the response will be like this
+
+    ```json
+    {
+        "success": true,
+        "message": "congrats folder is re-named successfully",
+        "folder": {
+            "id": "a2868d37-6a1a-4116-b8d8-cf676e47f75e",
+            "name": "My another folder inside root updated",
+            "type": "folder",
+            "parent_id": null,
+            "user_id": "3c9f73a9-4b4f-4bd2-9ba7-94e7e2d65c09",
+            "path": null,
+            "size": null,
+            "mime_type": null,
+            "is_deleted": false,
+            "created_at": "2025-08-19T14:18:51.913375+00:00",
+            "updated_at": "2025-08-19T14:18:51.913375+00:00"
+        }
+    }
+    ```
+
 * ### (2) Upload file
 
   * the api route is post request on `http://localhost:3000/files`
@@ -871,10 +897,7 @@
   * Reads all children items of the folder.
   * and same to show all the content on the root folder we can call our api with folderId for root.
 
-* ### (4) Rename File/Folder
 
-  * the api route will be PATCH request `/items/:id { name }`
-  * Change name in DB so it updates instantly in frontend.
 
 * ### (5) Delete (Move to Trash)
 
