@@ -701,3 +701,8 @@
 ## Changes -- we are adding our custom table -- profile for extra user info
 
 * for user name , avatar and may be theme preference -- later we are using the custom profile table and now we have to update our login , signup and user services.
+
+* now we attach a custom table to the user so when we need extra info we can query this table.
+
+---
+
