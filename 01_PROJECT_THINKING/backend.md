@@ -826,6 +826,27 @@
 
   * the api route will be post request on `http://localhost:3000/folders`
   * so in frontend we will have a button **create folder** and when user click it we will call our api to create a new folder inside the current folder.
+  * the response of create folder is this
+
+    ```json
+    {
+        "success": true,
+        "message": "folder created successfully",
+        "folder": {
+            "id": "a0d9ca88-d636-4e09-96af-494212e8d371",
+            "name": "My Root Folder",
+            "type": "folder",
+            "parent_id": null,
+            "user_id": "3c9f73a9-4b4f-4bd2-9ba7-94e7e2d65c09",
+            "path": null,
+            "size": null,
+            "mime_type": null,
+            "is_deleted": false,
+            "created_at": "2025-08-19T13:58:51.542774+00:00",
+            "updated_at": "2025-08-19T13:58:51.542774+00:00"
+        }
+    }
+    ```
 
 * ### (2) Upload file
 
