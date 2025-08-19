@@ -782,6 +782,26 @@
 
 ---
 
+## create a table items for file and folder
+
+* the table will look like this
+
+    ```sql
+    CREATE TABLE items (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    type text CHECK (type IN ('file', 'folder')) NOT NULL,
+    parent_id uuid REFERENCES items(id) ON DELETE CASCADE, -- null = root folder
+    user_id uuid REFERENCES users(id) NOT NULL,
+    path text,      -- storage path (for files only)
+    size bigint,    -- file size in bytes
+    mime_type text, -- "image/png", "application/pdf", etc.
+    is_deleted boolean DEFAULT false, -- for Trash
+    created_at timestamp DEFAULT now(),
+    updated_at timestamp DEFAULT now()
+    );
+    ```
+
 ## File and folder routes
 
 * now here we have two option either we choose seprate table but i guess it would become complex in terms of db query and we have to do at least two query every time.
