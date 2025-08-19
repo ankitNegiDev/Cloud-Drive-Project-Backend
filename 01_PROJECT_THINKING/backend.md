@@ -702,6 +702,19 @@
 
 * for user name , avatar and may be theme preference -- later we are using the custom profile table and now we have to update our login , signup and user services.
 
+* the sql query we write is this
+
+    ```sql
+    create table profiles (
+    id uuid references auth.users(id) primary key,
+    full_name text,
+    avatar_url text,
+    bio text,
+    created_at timestamp with time zone default now()
+    );
+
+    ```
+
 * now we attach a custom table to the user so when we need extra info we can query this table.
 
 ---
@@ -843,3 +856,12 @@
 * ### (7) Permanent Delete
 
   * DELETE `/items/:id/permanent`
+
+* now we also need to previw the data -- so for that we need a preview route -- like when the user is on home page/root folder then we will show all the files and folder but when user click on any files then this preview route will hit which will generate a signed url -- only for loged in user -- for a certain time -- 
+and then we can display and download the data like this functionality to user.
+
+---
+
+## Sharing Routes
+
+* for sharing we will create permision table.
