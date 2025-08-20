@@ -1071,3 +1071,18 @@ next -- is file routes - then trash routes , then sharing and searching --
 
       * ***Internal re-use***
         * our itemRouter can internally call those services instead of duplicating queries.
+
+* ## (3) get a file by its id
+
+  * the api route will be -- `http://localhost:3000/api/file/:id` and it will get the specific file info using its id.
+
+* ## (4) rename file using id
+
+  * the api route will be - `http://localhost:3000/api/file/:id` and it will re-name the specific file using its id.
+
+* ## (5) delete file using id
+
+  * the api route will be `http://localhost:3000/api/file/:id` and it will delte the speicifif file using its id.
+
+---
+
