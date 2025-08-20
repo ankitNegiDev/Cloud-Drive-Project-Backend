@@ -88,7 +88,7 @@ export async function getFilesByParentIdService(userId, parentId){
         
         // in case if error occured
         if(error){
-            const err=new Error("Sorry error occured in getting file from the table");
+            const err=new Error("Sorry error occured in getting file from the table using parentId");
             err.status=error.status;
             throw err;
         }
@@ -100,6 +100,97 @@ export async function getFilesByParentIdService(userId, parentId){
         console.log("error occured in the getFilesByParentIdService and error is : ",error);
 
         // throwing error back to controller.
+        throw error;
+    }
+}
+
+// (3) get file by its id.
+
+export async function getFileByIdService(userId,fileId){
+    try{
+        // getting file from table
+        const { data, error } = await supabase
+            .from("items")
+            .select("*")
+            .eq("id", fileId)
+            .eq("user_id", userId)
+            .eq("type", "file")
+            .single();
+        
+        // in case if error occured
+        if (error) {
+            const err = new Error("Sorry error occured in getting file from the table using fileId");
+            err.status = error.status;
+            throw err;
+        }
+
+        // if no eror
+        return data;
+    }catch(error){
+
+    }
+}
+
+// (4) rename file service --
+
+export async function renameFileService(userId, fileId, newName){
+    try{
+        // calling supabase to rename the file from the table row..
+        const { data, error } = await supabase
+            .from("items")
+            .update({ name: newName, updated_at: new Date() })
+            .eq("id", fileId)
+            .eq("user_id", userId)
+            .eq("type", "file")
+            .eq("is_deleted", false)
+            .select()
+            .single();
+        
+        // incase of error
+        if(error){
+            const err = new Error("Sorry error occured in re-namaing the file in table using fileId");
+            err.status = error.status;
+            throw err;
+        }
+        
+        // else return data
+        return data;
+    }catch(error){
+        console.log("sorry error occured in renameFileService and error is : ",error);
+
+        // throwing erro back to controller
+        throw error;
+    }
+}
+
+// (5) soft delete by its id
+
+export async function deleteFileService(userId,fileId){
+    try{
+        // calling supabase -- for deleting the file from the items table
+        const { data, error } = await supabase
+            .from("items")
+            .update({ is_deleted: true, updated_at: new Date() })
+            .eq("id", fileId)
+            .eq("user_id", userId)
+            .eq("type", "file")
+            .select()
+            .single();
+        
+
+        // incase of error
+        if (error) {
+            const err = new Error("Sorry error occured in deleting the file from the table using fileId");
+            err.status = error.status;
+            throw err;
+        }
+
+        // else 
+        return data;
+    }catch(error){
+        console.log("sorry error occured in deleteFileService and error is : ", error);
+
+        // throwing erro back to controller
         throw error;
     }
 }

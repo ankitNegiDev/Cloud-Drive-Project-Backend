@@ -1,7 +1,7 @@
 // all routes realted to file handeling
 
 import express from 'express';
-import { getFilesByParentIdController, uploadFileController } from '../controller/fileController.js';
+import { deleteFileController, getFileByIdController, getFilesByParentIdController, renameFileController, uploadFileController } from '../controller/fileController.js';
 import { upload } from '../middleware/multer.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -14,6 +14,13 @@ fileRouter.post('/', authMiddleware,upload.single('file'),uploadFileController);
 fileRouter.get('/', authMiddleware, getFilesByParentIdController);
 
 
+// (3) get a file by its id
+fileRouter.get('/:id', authMiddleware, getFileByIdController);
 
+// (4) rename file using id
+fileRouter.put('/:id', authMiddleware, renameFileController);
+
+// (5) delete file using id soft deelte
+fileRouter.delete('/:id', authMiddleware, deleteFileController);
 
 export default fileRouter;

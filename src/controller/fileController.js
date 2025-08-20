@@ -1,6 +1,6 @@
 // file controller that will handel all requst for a file.
 
-import { fileUploadService, getFilesByParentIdService } from "../service/fileService.js";
+import { deleteFileService, fileUploadService, getFileByIdService, getFilesByParentIdService, renameFileService } from "../service/fileService.js";
 
 // (1) upload file..
 
@@ -57,6 +57,93 @@ export async function getFilesByParentIdController(req,res){
         return res.status(error.status || 500).json({
             success:false,
             message:error.message || "Internal server error"
+        });
+    }
+}
+
+
+// (3) get file by its id.
+
+export async function getFileByIdController(req,res){
+    try{
+        // getting user id from auth
+        const userId=req.user.id;
+
+        // getting current file id from url params
+        const fileId = req.params.id; // const {fileId}=req.params -- directly destructure
+
+        // calling service
+        const result = await getFileByIdService(userId,fileId);
+
+        return res.status(200).json({
+            success:true,
+            message:`congrats file is successfully fetched by its id : ${fileId}`,
+            data:result
+        });
+    }catch(error){
+        console.log("error occured in the getFileByIdController and error is : ",error);
+
+        return res.status(error.status || 500).json({
+            success:false,
+            message:error.message || "Intrernal server erorr"
+        });
+    }
+}
+
+// (4) re-name file using file id.
+
+export async function renameFileController(req,res){
+    try{
+        // getting user id from auth middleware
+        const userId=req.user.id;
+
+        // getting file id from url params
+        const fileId=req.params.id;
+
+        // getting newName from req.body
+        const {newName}=req.body;
+
+        // calling service
+        const result = await renameFileService (userId,fileId,newName);
+
+        return res.status(200).json({
+            success:true,
+            message:"congrats file is re-named successfully",
+            data:result
+        });
+    }catch(error){
+        console.log("eror occured in renameFileController and erorr is : ",error);
+        return res.status(error.status || 500).json({
+            success:false,
+            mesasge:error.mesasge || "Internal server erorr"
+        });
+    }
+}
+
+
+// (5) deelteing the file --- 
+
+export async function deleteFileController(req,res){
+    try{
+        // getting user id from auth
+        const userId=req.user.id;
+
+        // getting file id from url parasm
+        const fileId=req.params.id;
+
+        // calling service 
+        const result = await deleteFileService(userId,fileId);
+
+        return res.status(200).json({
+            success:true,
+            message:"congrats file is successfully moved to trash",
+            data:result
+        });
+    }catch(error){
+        console.log("eror occured in deleteFileController and erorr is : ", error);
+        return res.status(error.status || 500).json({
+            success: false,
+            mesasge: error.mesasge || "Internal server erorr"
         });
     }
 }
