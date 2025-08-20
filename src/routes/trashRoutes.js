@@ -2,6 +2,7 @@
 
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { getTrashedItemsController } from "../controller/trashController.js";
 
 const trashRouter=express.Router();
 
