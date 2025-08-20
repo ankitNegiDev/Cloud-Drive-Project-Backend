@@ -30,10 +30,40 @@ export async function getItemsByParentIdService(parentId, userId){
 
         // else 
         return data;
-    }catch(erorr){
-        console.log("erorr occured in getItemsByParentIdService and erorr is : ",erorr);
+    }catch(error){
+        console.log("erorr occured in getItemsByParentIdService and erorr is : ",error);
 
         // throwing eror back to controller
-        throw erorr;
+        throw error;
+    }
+}
+
+// (2) Fetch single item by id
+
+export async function getItemByIdService(id,userId){
+    try{
+        // calling supabase -- items table
+        const { data, error } = await supabase
+            .from("items")
+            .select("*")
+            .eq("id", id)
+            .eq("user_id", userId)
+            .eq("is_deleted", false)
+            .single();
+        
+        // if eror occured
+        if (error) {
+            const err = new Error("Sorry error occured while fetching file/folder from items table using id");
+            err.status = 500 || error.status;
+            throw error;
+        }
+
+        // if not then return 
+        return data;
+    }catch(error){
+        console.log("erorr occured in getItemByIdService and erorr is : ", error);
+
+        // throwing eror back to controller
+        throw error;
     }
 }

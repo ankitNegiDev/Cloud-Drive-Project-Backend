@@ -3,7 +3,7 @@
 
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { getItemsByParentIdController } from "../controller/itemController.js";
+import { getItemByIdController, getItemsByParentIdController } from "../controller/itemController.js";
 
 const itemRouter=express.Router();
 
