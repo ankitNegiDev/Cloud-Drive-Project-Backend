@@ -1104,3 +1104,5 @@ next -- is file routes - then trash routes , then sharing and searching --
     ```
 
 ---
+
+## Trash Routes
