@@ -1044,3 +1044,9 @@ next -- is file routes - then trash routes , then sharing and searching --
   * ### Uploading a file into db in supabase after uploading to supabase storage
 
     * once we uploaded the file to the supabase storage then we need to insert it into the supabase db.
+
+---
+
+* ## (2) Get all files in a parent folder (parentId passed as query param)
+
+  * the api route for this is -- `http://localhost:3000/api/file?parentId=2344` this will get all files inside this folder with parent id 2344. if not parentId then its root folder.
