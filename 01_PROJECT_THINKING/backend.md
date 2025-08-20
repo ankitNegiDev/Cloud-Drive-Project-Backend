@@ -986,3 +986,61 @@ next -- is file routes - then trash routes , then sharing and searching --
 
     export default fileRouter;
     ```
+
+---
+
+## File Routes
+
+* here are imp file routes for mvp
+
+* ### (1) Upload a file
+
+  * the api route for this is `http://localhost:3000/file/` -- a post request will upload the file.
+
+  * this is the controller.
+
+    ```js
+    export const uploadFileController = async (req, res) => {
+    try {
+        const userId = req.user.id; // from authMiddleware
+        const file = req.file; // multer attaches this
+        const parentId = req.body.parentId || null;
+
+        const result = await uploadFileService(userId, file, parentId);
+        return res.status(201).json({ success: true, data: result });
+    } catch (error) {
+        console.error("Upload File Error:", error.message);
+        return res.status(500).json({ success: false, message: error.message });
+    }
+    };
+    ```
+
+  * **the parent id -- is sent by the client -- ?? that means -- how the client will know -- inside which folder he is -- ?? i just confused ??**
+  * so ans is -- > our frontend will somewhere maintains a current folder state and when the user navigates inside a folder we already have that folder's id (because we will fetched its contents).that means when the user uploads a file while inside that folder, the frontend passes that folder's id as parentId. and if the user upload file in the root in that case parentId will be null.
+
+  * ### Uploading a file to the supabase storage
+
+    * now to upload the file to the supabase storage we will use inbuilt function that supabase provide to us.
+
+        ```js
+        const { data: storageData, error: uploadError } = await supabase.storage
+        .from("files") // bucket name in Supabase Storage
+        .upload(`${userId}/${Date.now()}_${file.originalname}`, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false,
+        });
+        ```
+
+    * here `supabase.storage.from("files")` →  is our Supabase Storage bucket and name of our storage bucket is files.
+    * `.upload(path, file.buffer, options)` → this will uploads the actual file bytes (buffer) to our bucket named files or any bucket we use.
+      * `Path = ${userId}/${Date.now()}_${file.originalname}`
+        * here userId → separates users into folders.
+        * Date.now() → prevents filename collisions.
+        * file.originalname → keeps the original filename for reference.
+    * The file is now physically stored in Supabase's object storage (like S3).
+    * `storageData.path` → gives you the path inside the bucket where the file is stored.
+    * that means `.upload(path, file.buffer,options)` here path is --`Path = ${userId}/${Date.now()}_${file.originalname}` and file.buffer is same and `options are -- {contentType: file.mimetype,upsert: false,}
+
+  * ### Uploading a file into db in supabase after uploading to supabase storage
+
+    * once we uploaded the file to the supabase storage then we need to insert it into the supabase db.
