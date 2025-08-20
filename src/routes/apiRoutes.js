@@ -4,6 +4,7 @@ import userRouter from './userRoutes.js';
 import folderRouter from './folderRoutes.js';
 import fileRouter from './fileRoutes.js';
 import itemRouter from './itemRoutes.js';
+import trashRouter from './trashRoutes.js';
 
 const apiRouter=express.Router();
 
@@ -21,5 +22,8 @@ apiRouter.use('/file',fileRouter);
 
 // if the api strt with /api/item -- then send all request to itemRouter.
 apiRouter.use('/item',itemRouter);
+
+// if the api start with /api/trash -- then send all request to trashRouter.
+apiRouter.use('/trash',trashRouter);
 
 export default apiRouter;
