@@ -37,7 +37,7 @@ export async function createFolderService({name,parentId,userId}){
 
 // (2) get folders by parent id...
 
-export async function getFoldersService({parentId,userId}){
+export async function getFoldersByParentIdService({parentId,userId}){
     try{
         // getting all folder from the table.
         const { data, error } = await supabase

@@ -1,6 +1,6 @@
 // folder controller...
 
-import { createFolderService, deleteFolderService, getFolderByIdService, getFoldersService, renameFolderService } from "../service/folderService.js";
+import { createFolderService, deleteFolderService, getFolderByIdService, getFoldersByParentIdService, renameFolderService } from "../service/folderService.js";
 
 // (1) create new folder
 
@@ -31,7 +31,7 @@ export async function createFolderController(req,res){
 
 // (2) get folder using parent id.
 
-export async function getFoldersController(req,res){
+export async function getFoldersByParentIdController(req,res){
     try{
         // getting the parent id from url params
         const { parentId } = req.query;
@@ -40,7 +40,7 @@ export async function getFoldersController(req,res){
         const userId=req.user.id
 
         // calling service
-        const folders=await getFoldersService({parentId,userId});
+        const folders = await getFoldersByParentIdService({parentId,userId});
 
         return res.status(200).json({
             success:true,

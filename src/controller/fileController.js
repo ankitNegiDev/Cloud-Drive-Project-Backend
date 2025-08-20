@@ -1,6 +1,6 @@
 // file controller that will handel all requst for a file.
 
-import { fileUploadService } from "../service/fileService.js";
+import { fileUploadService, getFilesByParentIdService } from "../service/fileService.js";
 
 // (1) upload file..
 
@@ -26,6 +26,34 @@ export async function uploadFileController(req,res){
         });
     }catch(error){
         console.log("sorry error occured in the fileController and error is : ",error);
+        return res.status(error.status || 500).json({
+            success:false,
+            message:error.message || "Internal server error"
+        });
+    }
+}
+
+// (2) get all files inside a parent folder -- id
+
+export async function getFilesByParentIdController(req,res){
+    try{
+        // getting user id from auth middleware
+        const userId=req.user.id;
+
+        // getting parent id from the query params
+        const parentId=req.query.parentId || null;
+
+        // calling service --
+        const result = await getFilesByParentIdService(userId,parentId);
+
+        return res.status(200).json({
+            success:true,
+            message:`congrats files are fetched successfully inside folder with parentId : ${parentId}`,
+            data:result
+        });
+
+    }catch(error){
+        console.log("error occuured in getFilesByParentIdController and erorr is : ",error);
         return res.status(error.status || 500).json({
             success:false,
             message:error.message || "Internal server error"

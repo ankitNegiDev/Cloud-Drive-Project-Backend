@@ -1050,3 +1050,24 @@ next -- is file routes - then trash routes , then sharing and searching --
 * ## (2) Get all files in a parent folder (parentId passed as query param)
 
   * the api route for this is -- `http://localhost:3000/api/file?parentId=2344` this will get all files inside this folder with parent id 2344. if not parentId then its root folder.
+
+  * **but i am confused that -- suppose user click on a folder then -- what our goal is to show all file and folder inside that folder which is being clicked -- so we will call item router -- api that will fetch all files and folder -- and now my question is then where we will use this route of file and folder --- getting file and folder by parent id which is passed as query parameter**
+  * now the ans is ---> our goal is to = show everything inside it → files + folders.
+    * the best way is to call itemRouter → this will internally call:
+      * getFilesByParentId(parentId)
+      * getFoldersByParentId(parentId)
+      * then return { files: [...], folders: [...] } in a single response. So frontend only calls 1 API.
+
+  * **Then why do we still keep fileRouter.get('/',  getFilesByParentId) and folderRouter.get('/', getFolderByParentId)?**
+
+    * Because they are useful for specialized use cases:
+
+      * ***Files tab / All files view***
+        * Maybe we want a "Recent Files" or "All Files" page (like Google Drive has).
+        * That would only call fileRouter.get('/', getFilesByParentId) and ignore folders.
+
+      * ***Folders tab / Folder picker dialog***
+        * Example: when uploading a file we may want to show only folders (to choose where to upload). then we have to call folderRouter.get('/',getFoldersByParentId)
+
+      * ***Internal re-use***
+        * our itemRouter can internally call those services instead of duplicating queries.

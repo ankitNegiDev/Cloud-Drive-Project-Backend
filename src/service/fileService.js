@@ -72,3 +72,34 @@ export async function fileUploadService(userId,file,parentId){
         throw error;
     }
 }
+
+// (2) get files by parent folder id
+
+export async function getFilesByParentIdService(userId, parentId){
+    try{
+        // getting file from item table
+        const { data, error } = await supabase
+            .from("items")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("parent_id", parentId)
+            .eq("is_deleted", false)
+            .eq("type", "file");
+        
+        // in case if error occured
+        if(error){
+            const err=new Error("Sorry error occured in getting file from the table");
+            err.status=error.status;
+            throw err;
+        }
+
+        // if no error then return the data
+        return data;
+
+    }catch(error){
+        console.log("error occured in the getFilesByParentIdService and error is : ",error);
+
+        // throwing error back to controller.
+        throw error;
+    }
+}
