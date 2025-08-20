@@ -1093,3 +1093,14 @@ next -- is file routes - then trash routes , then sharing and searching --
 ## Items Routes
 
 * since our items table contains both the file and folder so we can also need to define a route that will fetch both file and folder when we want to show all files and folder inside the root or any other folder.
+
+    ```js
+    // (1) Get all items (files + folders) inside a parent folder
+    // parentId passed as query param (null for root)
+    itemRouter.get('/', authMiddleware, getItemsByParentIdController);
+
+    // (2) Get single item (file OR folder) by id
+    itemRouter.get("/:id", authMiddleware, getItemByIdController);
+    ```
+
+---
