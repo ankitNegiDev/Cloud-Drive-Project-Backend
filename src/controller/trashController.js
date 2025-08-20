@@ -1,6 +1,6 @@
 // trash controller..
 
-import { getTrashedItemsService, restoreItemService } from "../service/trashService.js";
+import { getTrashedItemsService, permanentlyDeleteItemService, restoreItemService } from "../service/trashService.js";
 
 // (1) get all trashed items of current user
 
@@ -46,6 +46,31 @@ export async function restoreItemController(req,res){
         });
     }catch(error){
         console.log("erorr occured in restoreItemController and error is : ",error);
+        return res.status(error.status || 500).json({
+            success:false,
+            message:error.message || "Internal server error"
+        });
+    }
+}
+
+// (3) permanently delete item
+
+export async function permanentlyDeleteItemController(req,res){
+    try{
+        // getting user id from auth
+        const userId=req.user.id;
+
+        // getting id from url prams
+        const {id}=req.params;
+
+        // calling service 
+        await permanentlyDeleteItemService(userId, id);
+        return res.status(200).json({
+            success:true,
+            message:"Item permanently delted"
+        });
+    }catch(error){
+        console.log("erorr occured in permanentlyDeletedItemController and erorr is : ",error);
         return res.status(error.status || 500).json({
             success:false,
             message:error.message || "Internal server error"

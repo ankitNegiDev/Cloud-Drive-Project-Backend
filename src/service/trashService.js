@@ -57,3 +57,29 @@ export async function restoreItemService(userId, id){
         throw error;
     }
 }
+
+// (3)  permanently delete item
+export async function permanentlyDeleteItemService(userId, id){
+    try{
+        const { error } = await supabase
+            .from("items")
+            .delete()
+            .eq("id", id)
+            .eq("user_id", userId);
+        
+        // if error occured.
+        if (error) {
+            const err = new Error("eror occured in dleting the file/folder from table permanently");
+            err.status = error.status || 500;
+            throw err;
+        }
+
+        // returning response just for debugging
+        return {success:true};
+    }catch(error){
+        console.log("error occured in permanentlyDeltedItemService and erorr is : ", error);
+
+        // throwing erorr back to controller.
+        throw error;
+    }
+}
