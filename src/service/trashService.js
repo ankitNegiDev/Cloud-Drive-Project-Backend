@@ -28,3 +28,32 @@ export async function getTrashedItemsService(userId){
         throw error;
     }
 }
+
+// (2)  restore item service 
+
+export async function restoreItemService(userId, id){
+    try{
+        const { data, error } = await supabase
+            .from("items")
+            .update({ is_deleted: false })
+            .eq("id", id)
+            .eq("user_id", userId)
+            .select()
+            .single();
+
+        // if error occured
+        if (error) {
+            const err = new Error("eror occured in restoring the file/folder using id");
+            err.status = error.status || 500;
+            throw err;
+        }
+
+        // if not then return 
+        return data;
+    }catch(error){
+        console.log("error occured in restoreItemService and erorr is : ", error);
+
+        // throwing erorr back to controller.
+        throw error;
+    }
+}

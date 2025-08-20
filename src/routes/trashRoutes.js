@@ -2,7 +2,7 @@
 
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { getTrashedItemsController } from "../controller/trashController.js";
+import { getTrashedItemsController, restoreItemController } from "../controller/trashController.js";
 
 const trashRouter=express.Router();
 
@@ -10,7 +10,7 @@ const trashRouter=express.Router();
 // (1) get all trashed items of current user
 trashRouter.get("/", authMiddleware, getTrashedItemsController);
 
-// (2) restore an item from trash
+// (2) restore an item from trash -- /api/trash/:id/restore
 trashRouter.put("/:id/restore", authMiddleware, restoreItemController);
 
 // (3) permanently delete an item
