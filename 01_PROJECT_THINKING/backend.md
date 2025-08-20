@@ -1106,3 +1106,16 @@ next -- is file routes - then trash routes , then sharing and searching --
 ---
 
 ## Trash Routes
+
+* added trash routes
+
+    ```js
+    // (1) get all trashed items of current user
+    trashRouter.get("/", authMiddleware, getTrashedItemsController);
+
+    // (2) restore an item from trash
+    trashRouter.put("/:id/restore", authMiddleware, restoreItemController);
+
+    // (3) permanently delete an item
+    trashRouter.delete("/:id", authMiddleware, permanentlyDeleteItemController);
+    ```
