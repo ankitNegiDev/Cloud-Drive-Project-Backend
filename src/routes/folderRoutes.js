@@ -1,7 +1,7 @@
 // all folder routes...
 
 import express from "express";
-import { createFolderController, deleteFolderController, getFoldersController, renameFolderController } from "../controller/folderController.js";
+import { createFolderController, deleteFolderController, getFolderByIdController, getFoldersController, renameFolderController } from "../controller/folderController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const folderRouter=express.Router();
@@ -17,7 +17,11 @@ folderRouter.post('/',authMiddleware,createFolderController);
  */
 
 // get folders (root or inside parent)  -- parent id is passed as query parameter
+// this route is for --- getting all folder inside a parent folder -- so we will need another route for get folder by current folder id..
 folderRouter.get('/', authMiddleware, getFoldersController);
+
+// (2a) get folder by its id --- folder id is passed as url params
+folderRouter.get("/:id", authMiddleware, getFolderByIdController);
 
 
 // (3) rename folder using id as url params --- not parent id
@@ -25,7 +29,6 @@ folderRouter.put("/:id", authMiddleware, renameFolderController);
 
 // (4) delete folder using  id.. as url params  --- not parent id
 folderRouter.delete("/:id", authMiddleware, deleteFolderController);
-
 
 
 

@@ -85,6 +85,36 @@ export async function getFoldersService({parentId,userId}){
     }
 }
 
+// (2a) get folder by its id.
+
+export async function getFolderByIdService (userId, folderId){
+    try{
+        // getting folder details from supabase base db.
+        const { data, error } = await supabase
+            .from("items")
+            .select("*")
+            .eq("id", folderId)
+            .eq("user_id", userId)
+            .eq("type", "folder")
+            .single();
+        
+        // in case if we got error
+        if (error) {
+            const err = new Error("Failed to fetch folder");
+            err.status = 500;
+            throw err;
+        }
+
+        // if no eror then return 
+        return data;
+    }catch(error){
+        console.log("eror occured in the getFolderByIdService and erorr is : ",error);
+
+        // throwing erro back to controller
+        throw error;
+    }
+}
+
 // (3) rename folder service..
 
 export async function renameFolderService({id,newName,userId}){

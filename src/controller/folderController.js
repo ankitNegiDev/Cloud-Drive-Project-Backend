@@ -1,6 +1,6 @@
 // folder controller...
 
-import { createFolderService, deleteFolderService, getFoldersService, renameFolderService } from "../service/folderService.js";
+import { createFolderService, deleteFolderService, getFolderByIdService, getFoldersService, renameFolderService } from "../service/folderService.js";
 
 // (1) create new folder
 
@@ -55,6 +55,44 @@ export async function getFoldersController(req,res){
         });
     }
 }
+
+// (2a) get folder by its id
+
+export async function getFolderByIdController(req,res){
+    try{
+        // getting the folder id from the url params
+        const {folderId}=req.params;
+
+        // getting user id from auth middleware
+        const userId=req.user.id;
+
+        // calling service
+        const folderDetails = await getFolderByIdService(userId,folderId);
+
+        // in case if no folder found
+        if(!folderDetails){
+            return res.status(404).json({
+                success:false,
+                message:"Folder not found"
+            });
+        }
+
+        // if folder found then
+        return res.status(200).json({
+            success:true,
+            message:"congrats folder found and below are its details",
+            data:folderDetails
+        })
+    }catch(error){
+
+        console.log("error occured in the getFolderByIdController and error is : ",error);
+        return res.status(error.status || 500).json({
+            success:false,
+            message:error.message || "Internal server deatials"
+        });
+    }
+}
+
 
 // (3) rename folder 
 
