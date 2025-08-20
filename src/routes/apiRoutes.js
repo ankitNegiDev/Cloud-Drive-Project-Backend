@@ -3,6 +3,7 @@ import authRouter from './authRoutes.js';
 import userRouter from './userRoutes.js';
 import folderRouter from './folderRoutes.js';
 import fileRouter from './fileRoutes.js';
+import itemRouter from './itemRoutes.js';
 
 const apiRouter=express.Router();
 
@@ -17,5 +18,8 @@ apiRouter.use('/folder',folderRouter);
 
 // if the api strt with /api/file -- then send all request to file router.
 apiRouter.use('/file',fileRouter);
+
+// if the api strt with /api/item -- then send all request to itemRouter.
+apiRouter.use('/item',itemRouter);
 
 export default apiRouter;

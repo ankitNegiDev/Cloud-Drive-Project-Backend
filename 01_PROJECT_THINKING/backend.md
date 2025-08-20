@@ -1087,3 +1087,9 @@ next -- is file routes - then trash routes , then sharing and searching --
 ---
 
 * next -- item routes - (combine route for fetching file and folders -- ) check other routes also acc to usecase , then trash route -- like to res-store or delete permanently -- then sharing route (signed url with time limit) then searching ---
+
+---
+
+## Items Routes
+
+* since our items table contains both the file and folder so we can also need to define a route that will fetch both file and folder when we want to show all files and folder inside the root or any other folder.

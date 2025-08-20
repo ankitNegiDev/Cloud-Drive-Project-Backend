@@ -129,7 +129,7 @@ export async function deleteFileController(req,res){
         const userId=req.user.id;
 
         // getting file id from url parasm
-        const fileId=req.params.id;
+        const fileId = req.params.id; //! check if erorr comes then --- do const {fileId}=req.params - or check what is sent  GET /file?id=123 then we can use id but we are using fileId in frontend while sending the id then here we have to req.parms.fileId
 
         // calling service 
         const result = await deleteFileService(userId,fileId);
