@@ -30,4 +30,6 @@ apiRouter.use('/trash',trashRouter);
 // if the api start with /api/shares -- then send all request to shareRouter.
 apiRouter.use('/shares',shareRouter);
 
+// if the api start with /api/search -- then send all request to search rotuesr.
+
 export default apiRouter;
