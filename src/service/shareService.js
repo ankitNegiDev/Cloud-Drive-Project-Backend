@@ -48,3 +48,85 @@ export async function createShareLinkService(ownerId,itemId){
         throw error;
     }
 }
+
+// (2) delete public share link
+export async function deleteShareLinkService(ownerId,itemId){
+    try{
+        const { error } = await supabase
+            .from("shares")
+            .delete()
+            .eq("item_id", itemId)
+            .eq("owner_id", ownerId)
+            .eq("share_type", "link");
+        
+        // in case if error occured...
+        if(error){
+            const err = new Error("sorry error occured in deleting the public sharable link");
+            err.message = error.message;
+            err.status = error.status || 500;
+            throw err;
+        }
+
+        // just for debugging
+        return {success:true};
+    }catch(error){
+        console.log("error occured in deleteShareLinkService and error is : ", error);
+
+        // throwing error back to controller.
+        throw error;
+    }
+}
+
+// (3) accesing item from public link .. means any user with public link can access the item (file/folder)
+
+export async function accessShareLinkService(token){
+    try{
+        // getting item from the shares table using token
+        const { data, error } = await supabase
+            .from("shares")
+            .select("item_id, role, expires_at")
+            .eq("token", token)
+            .eq("share_type", "link")
+            .single();
+        
+
+        // in case if error occured...
+        if (error || !data) {
+            const err = new Error("sorry error occured in accessing item from shares table using public sharable link");
+            err.message = error.message;
+            err.status = error.status || 500;
+            throw err;
+        }
+
+        // checking link expirary
+        if (data.expires_at && new Date(data.expires_at) < new Date()) {
+            const err=new Error("Link has been expired");
+            err.status=401;
+            throw err;
+        }
+
+        // getting actual item details
+        const { data: item, error: itemError } = await supabase
+            .from("items")
+            .select("*")
+            .eq("id", data.item_id)
+            .single();
+
+
+        // if itemError
+        if(itemError){
+            const err=new Error("sorry file/folder (item) not found in the itme table");
+            err.status=404;
+            throw err;
+        }
+
+        // if no error 
+        return item;
+        
+    }catch(error){
+        console.log("error occured in accessShareLinkService and error is : ", error);
+
+        // throwing error back to controller.
+        throw error;
+    }
+}
