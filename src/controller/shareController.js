@@ -1,6 +1,6 @@
 // share controller --
 
-import { accessPublicShareService, createPublicShareService, deletePublicShareService } from "../service/shareService.js";
+import { accessPublicShareService, createPublicShareService, createRestrictedShareService, deletePublicShareService } from "../service/shareService.js";
 
 
 // ---- Public share ----
@@ -76,6 +76,45 @@ export async function accessPublicShareController(req,res){
 
     }catch(error){
         console.log("error in accessPublicShareController and erorr is : ", error);
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
+
+// ==============================================================================
+
+//* Restricted Share routes
+
+// (1) Creating  restricted share
+
+export async function createRestrictedShareController(req,res){
+    try{
+        // getting the user id from auth middleware..
+        const ownerId=req.user.id;
+
+        // getting the itmeId from the path params
+        const {itemId}=req.params;
+
+        // destructuring the req.body
+        /**
+         * so we will ask user -- in frontend that for how long he wanted to share the file that's why expiresAt is coming from the frontend.
+         */
+        const { email, role = "viewer", expiresAt } = req.body;
+
+        // calling the service...
+        const result = await createRestrictedShareService(ownerId, itemId, email, role, expiresAt);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Restricted share created successfully',
+            data: result
+        });
+
+    }catch(error){
+        console.log("Error in createRestrictedShareController and erorr is : ", error);
         return res.status(error.status || 500).json({
             success: false,
             message: error.message || "Internal server error"

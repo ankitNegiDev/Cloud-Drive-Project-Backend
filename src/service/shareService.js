@@ -147,3 +147,61 @@ export async function accessPublicShareService(token){
         throw error;
     }
 }
+
+
+// ===========================================================
+
+//* Restricted Sharing --- service
+
+
+// (1) creating restricted sahre..
+
+export async function createRestrictedShareService(ownerId, itemId, email, role, expiresAt){
+    try{
+
+        // first we need to check if user exist with this email or not ..
+        const { data: user, error: userError } = await supabase
+            .from("auth.users")
+            .select("id")
+            .eq("email", email)
+            .single();
+        
+
+        let sharedWithId = null;
+        let sharedEmail = null;
+
+        if (user) {
+            sharedWithId = user.id; // if user exists then store userId
+        } else {
+            sharedEmail = email; // if user does not exist yet in user table in supabase then store email
+        }
+
+        // now inserting the data in the shares table
+        const { data, error } = await supabase
+            .from("shares")
+            .insert([{
+                item_id: itemId,
+                owner_id: ownerId,
+                share_type: "restricted",
+                shared_with: sharedWithId,
+                shared_email: sharedEmail,
+                role,
+                expires_at: expiresAt || null
+            }])
+            .select()
+            .single();
+
+        if (error){
+            const err=new Error("error in inserting data in the share table");
+            err.status=error.status;
+            throw err;
+        }
+        return data;
+
+    }catch(error){
+        console.log("Error in createRestrictedShareService and erorr is : ", error);
+
+        // throwing eror back to controller.
+        throw error;
+    }
+}

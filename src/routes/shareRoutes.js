@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { accessPublicShareController, createPublicShareController, deletePublicShareController } from '../controller/shareController.js';
+import { accessPublicShareController, createPublicShareController, createRestrictedShareController, deletePublicShareController } from '../controller/shareController.js';
 
 const shareRouter=express.Router();
 
@@ -16,6 +16,16 @@ shareRouter.delete('/public/:itemId', authMiddleware, deletePublicShareControlle
 
 // (3) accessing the public share link
 shareRouter.get('/public/:token', accessPublicShareController); // here no auth is required.  but we need to generate a signed url since our storage bucket is private so --
+
+
+// ==========================================================================
+
+//* (B) Routes for Restricted Sharing
+
+// (1) Create a restricted share (with email or existing user)
+shareRouter.post('/restricted/:itemId', authMiddleware, createRestrictedShareController);
+
+
 
 
 export default shareRouter;
