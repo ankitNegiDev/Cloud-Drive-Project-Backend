@@ -1214,3 +1214,20 @@ next -- is file routes - then trash routes , then sharing and searching --
     EXECUTE FUNCTION link_new_user_to_shares();
 
     ``
+
+
+---
+
+* the file permission middleware is used ith item routes , file routes and folder routes -- check it later
+* it will look something like this
+
+    ```js
+    fileRouter.get('/', authMiddleware, getFilesByParentIdController); // list files
+    fileRouter.get('/:id', authMiddleware, filePermissionMiddleware("viewer"), getFileByIdController);
+    fileRouter.put('/:id', authMiddleware, filePermissionMiddleware("editor"), renameFileController);
+    fileRouter.delete('/:id', authMiddleware, filePermissionMiddleware("editor"), deleteFileController);
+    fileRouter.post('/', authMiddleware, upload.single('file'), uploadFileController); // creator is owner, handle in service
+
+    ```
+
+---
