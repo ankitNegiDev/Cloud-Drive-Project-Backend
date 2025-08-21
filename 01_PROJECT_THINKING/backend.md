@@ -1231,3 +1231,7 @@ next -- is file routes - then trash routes , then sharing and searching --
     ```
 
 ---
+
+## Search Routes
+
+* for search we take three thing -- like when user type then searched item can come from -- one owned itmes (means loged in user is owner of those files) , restricted items means files that are shared with this user using restricted sharing, and public items
