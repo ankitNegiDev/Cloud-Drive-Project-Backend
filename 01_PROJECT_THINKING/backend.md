@@ -1129,31 +1129,49 @@ next -- is file routes - then trash routes , then sharing and searching --
 * and we also need to create a share table in the supabase.
 
     ```sql
-    -- First, create an enum for share_type
-    CREATE TYPE share_type AS ENUM ('link', 'restricted');
+        -- Enum for share type
+        CREATE TYPE share_type AS ENUM ('link', 'restricted');
 
-    -- Then create an enum for role (permission level)
-    CREATE TYPE share_role AS ENUM ('viewer', 'editor');
+        -- Enum for share role
+        CREATE TYPE share_role AS ENUM ('viewer', 'editor', 'owner');
 
-    -- Now create the shares table
-    CREATE TABLE shares (
-        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-        item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
-        owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-        share_type share_type NOT NULL,
-        shared_with UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- null for link sharing
-        token TEXT UNIQUE, -- only used when share_type = 'link'
-        role share_role NOT NULL DEFAULT 'viewer',
-        expires_at TIMESTAMPTZ, -- optional expiry for link/restricted
-        created_at TIMESTAMPTZ DEFAULT now(),
-        updated_at TIMESTAMPTZ DEFAULT now()
-    );
+        -- Now create the shares table
+        CREATE TABLE shares (
+            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 
-    -- For fast lookups
-    CREATE INDEX shares_item_idx ON shares(item_id);
-    CREATE INDEX shares_owner_idx ON shares(owner_id);
-    CREATE INDEX shares_shared_with_idx ON shares(shared_with);
-    CREATE INDEX shares_token_idx ON shares(token);
+            -- The item being shared
+            item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+
+            -- Who created the share
+            owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+
+            -- Share type: link or restricted
+            share_type share_type NOT NULL,
+
+            -- For restricted sharing
+            shared_with UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- may be NULL
+            shared_email TEXT,                                           -- may be NULL, used if user doesn’t exist yet
+
+            -- For link sharing
+            token TEXT UNIQUE, -- only used when share_type = 'link'
+
+            -- Permission role
+            role share_role NOT NULL DEFAULT 'viewer',
+
+            -- Optional expiry
+            expires_at TIMESTAMPTZ,
+
+            -- Timestamps
+            created_at TIMESTAMPTZ DEFAULT now(),
+            updated_at TIMESTAMPTZ DEFAULT now()
+        );
+
+        -- For fast lookups
+        CREATE INDEX shares_item_idx ON shares(item_id);
+        CREATE INDEX shares_owner_idx ON shares(owner_id);
+        CREATE INDEX shares_shared_with_idx ON shares(shared_with);
+        CREATE INDEX shares_shared_email_idx ON shares(shared_email);
+        CREATE INDEX shares_token_idx ON shares(token);
 
     ```
 
@@ -1165,3 +1183,5 @@ next -- is file routes - then trash routes , then sharing and searching --
 
   * when we create restricted share -- then we will ask user to enter the email and then we need to create a search user api routes that will find the user based on email but but suppose that user never use our plateform so there will be no record of it and in that case we can't share with unkown user..
   * so the solution is we need to update our share table so that when user exist then share with user id elese share with email. something we can do --- (still need to do research more)..
+
+  * now for the time being we are assuming that we will ask user to enter that mail id of that user to whom he/she want to share a file and then if the user with that mail id exist then we will set shared with userId else if user does not exist then we will set it shared with email_id -- temporarly and when that user loged in then we will replace it with actual user.id.
