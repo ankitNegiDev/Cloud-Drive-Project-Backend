@@ -1119,3 +1119,44 @@ next -- is file routes - then trash routes , then sharing and searching --
     // (3) permanently delete an item
     trashRouter.delete("/:id", authMiddleware, permanentlyDeleteItemController);
     ```
+
+---
+
+## Sharing Routes (mvp)
+
+* initially we will do all the routes that are required for mvp.
+* so for this we will create a shareRouter and all the api that strt with /api/shares/ will be handel by this router.
+* and we also need to create a share table in the supabase.
+
+    ```sql
+    -- First, create an enum for share_type
+    CREATE TYPE share_type AS ENUM ('link', 'restricted');
+
+    -- Then create an enum for role (permission level)
+    CREATE TYPE share_role AS ENUM ('viewer', 'editor');
+
+    -- Now create the shares table
+    CREATE TABLE shares (
+        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+        item_id UUID NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+        owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+        share_type share_type NOT NULL,
+        shared_with UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- null for link sharing
+        token TEXT UNIQUE, -- only used when share_type = 'link'
+        role share_role NOT NULL DEFAULT 'viewer',
+        expires_at TIMESTAMPTZ, -- optional expiry for link/restricted
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+    );
+
+    -- For fast lookups
+    CREATE INDEX shares_item_idx ON shares(item_id);
+    CREATE INDEX shares_owner_idx ON shares(owner_id);
+    CREATE INDEX shares_shared_with_idx ON shares(shared_with);
+    CREATE INDEX shares_token_idx ON shares(token);
+
+    ```
+
+* ### (1) public link sharing
+
+  * for public link we have to first create a link so that user can share it and anyone with that link is accessible to access that file.
