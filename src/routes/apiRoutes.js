@@ -5,6 +5,7 @@ import folderRouter from './folderRoutes.js';
 import fileRouter from './fileRoutes.js';
 import itemRouter from './itemRoutes.js';
 import trashRouter from './trashRoutes.js';
+import shareRouter from './shareRoutes.js';
 
 const apiRouter=express.Router();
 
@@ -25,5 +26,8 @@ apiRouter.use('/item',itemRouter);
 
 // if the api start with /api/trash -- then send all request to trashRouter.
 apiRouter.use('/trash',trashRouter);
+
+// if the api start with /api/shares -- then send all request to shareRouter.
+apiRouter.use('/shares',shareRouter);
 
 export default apiRouter;
