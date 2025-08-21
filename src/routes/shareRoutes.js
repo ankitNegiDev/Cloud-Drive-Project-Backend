@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { accessPublicShareController, createPublicShareController, createRestrictedShareController, deletePublicShareController } from '../controller/shareController.js';
+import { accessPublicShareController, accessRestrictedShareController, createPublicShareController, createRestrictedShareController, deletePublicShareController, deleteRestrictedShareController, sharedWithMeController } from '../controller/shareController.js';
 
 const shareRouter=express.Router();
 
@@ -25,8 +25,17 @@ shareRouter.get('/public/:token', accessPublicShareController); // here no auth 
 // (1) Create a restricted share (with email or existing user)
 shareRouter.post('/restricted/:itemId', authMiddleware, createRestrictedShareController);
 
+// (2) Delete a restricted share
+shareRouter.delete('/restricted/:itemId', authMiddleware, deleteRestrictedShareController);
 
+// (3) Access a restricted share using signed url.
+/**
+ * now this sahreId is what  this `shareRouter.post('/restricted/:itemId', authMiddleware, createRestrictedShareController);` route return the response --- this share response will have the id which is our share id.
+ */
+shareRouter.get('/restricted/:shareId', authMiddleware, accessRestrictedShareController);
 
+// (4) List of all files/folders shared with me
+shareRouter.get('/shared-with-me', authMiddleware, sharedWithMeController);
 
 export default shareRouter;
 

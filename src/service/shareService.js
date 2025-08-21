@@ -1,5 +1,6 @@
 // share servicde -- 
 
+import { error } from "console";
 import { supabase } from "../config/supabaseClient.js";
 import { randomBytes } from 'crypto';
 
@@ -202,6 +203,122 @@ export async function createRestrictedShareService(ownerId, itemId, email, role,
         console.log("Error in createRestrictedShareService and erorr is : ", error);
 
         // throwing eror back to controller.
+        throw error;
+    }
+}
+
+
+// (2) Delete restricted share
+
+export async function deleteRestrictedShareService(ownerId,itemId){
+    try{
+        const { error } = await supabase
+            .from("shares")
+            .delete()
+            .eq("owner_id", ownerId)
+            .eq("item_id", itemId)
+            .eq("share_type", "restricted");
+        
+        if (error) {
+            const err = new Error("error in deleting the share data from the share table");
+            err.status = error.status;
+            throw err;
+        }
+
+        // just for debugging
+
+        return {success:true};
+    }catch(error){
+        console.log("Error in deleteRestrictedShareService and eror is : ", error);
+        throw error;
+    }
+}
+
+
+// (3) access share 
+
+export async function accessRestrictedShareService(userId,shareId){
+    try{
+        // getting the data fro mthe share table using sahre id.
+        const { data: share, error: shareError } = await supabase
+            .from("shares")
+            .select("id, item_id, shared_with, shared_email, role, expires_at")
+            .eq("id", shareId)
+            .eq("share_type", "restricted")
+            .single();
+        
+        // in case if e got error 
+        if(shareError || !share){
+            const err=new Error("sorry we got error in getting the data from share table using shareId");
+            err.status=shareError.status;
+            throw err;
+        }
+
+        // Checking expirary
+        if (share.expires_at && new Date(share.expires_at) < new Date()) {
+            const err = new Error("Share has expired");
+            err.status = 401;
+            throw err;
+        }
+
+        // Checking  permission
+        if (share.shared_with !== userId) {
+            const err = new Error("You do not have access to this item");
+            err.status = 403;
+            throw err;
+        }
+
+
+        // Fetching  actual item data from the items table
+        const { data: item, error: itemError } = await supabase
+            .from("items")
+            .select("*")
+            .eq("id", share.item_id)
+            .single();
+        
+        // in case if we got error in getting the single itme from the items table using item id
+        if(itemError || !item){
+            const err=new Error("sorry we got error in fetching the item from the items table");
+            err.status=itemError.status;
+            throw err;
+        }
+
+        // now generating the signed url since our supabase storage is private.
+        let signedUrl = null;
+        if (item.type === "file") {
+            const { data: signedData, error: signedError } = supabase
+                .storage
+                .from("files")
+                .createSignedUrl(item.path, 60);
+
+            if (signedError) throw new Error("Could not generate signed URL");
+            signedUrl = signedData.signedUrl;
+        }
+
+        // now returning the data
+        return { item, signedUrl, role: share.role };
+    }catch(error){
+        console.log("Error in accessRestrictedShareService and erorr is : ", error);
+        throw error;
+    }
+}
+
+
+// (4) List of items shared with me
+
+export async function sharedWithMeService(userId){
+    try{
+        const { data, error } = await supabase
+            .from("shares")
+            .select("id, item_id, owner_id, role, expires_at")
+            .eq("shared_with", userId)
+            .eq("share_type", "restricted");
+        
+        if (error) throw error;
+        return data;
+
+    }catch(error){
+        console.log("Error in sharedWithMeService and error is : ", error);
         throw error;
     }
 }

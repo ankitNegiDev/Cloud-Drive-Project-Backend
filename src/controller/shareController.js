@@ -1,6 +1,6 @@
 // share controller --
 
-import { accessPublicShareService, createPublicShareService, createRestrictedShareService, deletePublicShareService } from "../service/shareService.js";
+import { accessPublicShareService, accessRestrictedShareService, createPublicShareService, createRestrictedShareService, deletePublicShareService, deleteRestrictedShareService, sharedWithMeService } from "../service/shareService.js";
 
 
 // ---- Public share ----
@@ -115,6 +115,86 @@ export async function createRestrictedShareController(req,res){
 
     }catch(error){
         console.log("Error in createRestrictedShareController and erorr is : ", error);
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
+
+// (2) delete sahre
+
+export async function deleteRestrictedShareController(req,res){
+    try{
+        // getting the user id from the auth middleware.
+        const ownerId=req.user.id;
+
+        // getting item id from the path params
+        const {itemId}=req.params;
+
+        // calling service
+        await deleteRestrictedShareService(ownerId, itemId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Restricted share deleted successfully'
+        });
+    }catch(error){
+        console.log("Error in deleteRestrictedShareController and eror is : ", error);
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
+// (3)  Access restricted share
+
+export async function accessRestrictedShareController(req,res){
+    try{
+        // getting user id fro mauth middleware
+        const userId=req.user.id;
+
+        // getting the share id from path params
+        const {shareId}=req.params;
+
+        // calling service 
+        const item = await accessRestrictedShareService(userId, shareId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Accessed restricted share successfully',
+            data: item
+        });
+    }catch(error){
+        console.log("Error in accessRestrictedShareController and erorr is : ", error);
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error"
+        });
+    }
+}
+
+
+// (4) shared with me -- -this the route using which the user will see ..
+
+export async function sharedWithMeController(req,res){
+    try{
+        // getting the userid
+        const userId=req.user.id;
+
+        // calling service
+        const sharedItems = await sharedWithMeService(userId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Fetched items shared with you',
+            data: sharedItems
+        });
+
+    }catch(error){
+        console.log("Error in sharedWithMeController and error is : ", error);
         return res.status(error.status || 500).json({
             success: false,
             message: error.message || "Internal server error"
