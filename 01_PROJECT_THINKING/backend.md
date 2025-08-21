@@ -1160,3 +1160,8 @@ next -- is file routes - then trash routes , then sharing and searching --
 * ### (1) public link sharing
 
   * for public link we have to first create a link so that user can share it and anyone with that link is accessible to access that file.
+
+* ### (2) restricted link sharing
+
+  * when we create restricted share -- then we will ask user to enter the email and then we need to create a search user api routes that will find the user based on email but but suppose that user never use our plateform so there will be no record of it and in that case we can't share with unkown user..
+  * so the solution is we need to update our share table so that when user exist then share with user id elese share with email. something we can do --- (still need to do research more)..
