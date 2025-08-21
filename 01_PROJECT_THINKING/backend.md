@@ -1185,3 +1185,32 @@ next -- is file routes - then trash routes , then sharing and searching --
   * so the solution is we need to update our share table so that when user exist then share with user id elese share with email. something we can do --- (still need to do research more)..
 
   * now for the time being we are assuming that we will ask user to enter that mail id of that user to whom he/she want to share a file and then if the user with that mail id exist then we will set shared with userId else if user does not exist then we will set it shared with email_id -- temporarly and when that user loged in then we will replace it with actual user.id.
+
+  * this is the sql trigger function that we need to run so that it becomes our db part -- and this is helpful when user want to sahre the link with that user which is not existed in our auth user table -- so that we temorily store it with non-existed urse email and once if he loged in then we on behalf of us this function will run and added with userId now.
+
+    ```sql
+    -- Function to link shares when a new user is created
+    CREATE OR REPLACE FUNCTION link_new_user_to_shares()
+    RETURNS TRIGGER AS $$
+    BEGIN
+    -- Update shares table where shared_email matches the new user's email
+    UPDATE shares
+    SET shared_with = NEW.id,
+        shared_email = NULL,
+        updated_at = NOW()
+    WHERE shared_email = NEW.email;
+
+    RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+    -- Drop the trigger if it exists
+    DROP TRIGGER IF EXISTS update_shares_on_new_user ON auth.users;
+
+    -- Create the trigger to fire AFTER a new user is inserted
+    CREATE TRIGGER update_shares_on_new_user
+    AFTER INSERT ON auth.users
+    FOR EACH ROW
+    EXECUTE FUNCTION link_new_user_to_shares();
+
+    ``
