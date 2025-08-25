@@ -16,7 +16,7 @@ eyJhbGciOiJIUzI1NiIsImtpZCI6InJ1WVhNQWlvdllGT3FkZzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiO
 
 // auth controller -- that will accept signup and login request....
 
-import { loginService, signupService } from "../service/authService.js";
+import { loginService, logoutService, signupService } from "../service/authService.js";
 
 // signup controller.
 
