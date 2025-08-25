@@ -104,3 +104,27 @@ export async function loginService(email,password){
         throw error;
     }
 }
+
+
+// logout service 
+
+export async function logoutService(){
+    try{
+        // calling supabase 
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            const err = new Error("Error occurred during logout");
+            err.message = error.message;
+            err.status = 400;
+            throw err;
+        }
+
+        // reutrnign a object with mesage just for debugging purpose...
+        return { message: "Logged out successfully" };
+    }catch(error){
+        console.log("error in logout service and error is : ", error);
+        throw error;
+
+    }
+}

@@ -68,3 +68,23 @@ export async function loginController(req,res){
         })
     }
 }
+
+// logout controller.
+
+export async function logoutController(req,res){
+    try{
+        // calling service
+        const data = await logoutService();
+
+        return res.status(200).json({
+            success: true,
+            message: "User logged out successfully",
+            response: data
+        });
+    }catch(error){
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error - user failed to logout"
+        });
+    }
+}
