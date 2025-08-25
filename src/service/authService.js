@@ -128,3 +128,53 @@ export async function logoutService(){
 
     }
 }
+
+// get current user service
+
+export async function getCurrentUserService(token){
+    try{
+        // now getting the user info from supabase.
+        /**
+         * {
+                data: {
+                    user: { id: "abc123", email: "test@example.com", ... }
+                },
+                error: null
+            }
+         */
+        // here we are doing nested destructing
+        const { data: { user }, error } = await supabase.auth.getUser(token);
+
+        // in case if any error occures
+        if (error || !user) {
+            const err = new Error("Invalid or expired token");
+            err.status = 401;
+            throw err;
+        }
+
+        // fetching  profile data also for current user.
+        const { data: profileData, error: profileError } = await supabase
+            .from("profiles")
+            .select("full_name, avatar_url")
+            .eq("id", user.id)
+            .single();
+
+        // if any eror in fetching profiled ata.
+        if (profileError) {
+            const err = new Error("Failed to fetch profile");
+            err.message = profileError.message;
+            err.status = 404;
+            throw err;
+        }
+
+        // returning the resposne.
+        return {
+            user,
+            profile: profileData
+        };
+    }catch(error){
+        console.log("error in getCurrentUserService: ", error);
+        throw error;
+    }
+    
+}
