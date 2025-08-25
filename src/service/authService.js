@@ -178,3 +178,34 @@ export async function getCurrentUserService(token){
     }
     
 }
+
+// google login service
+
+export async function googleLoginService() {
+    try {
+        // calling supabase.
+        /**
+         * /auth/callback → the page/route you create in React to handle the OAuth response here callback is just symboolising that - once the user is loged in then user will be redirect to home page or any page where we want-- we can name anything like /auth/redirect or etc.
+         */
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: "http://localhost:3000/auth/callback"
+            }
+        });
+
+        // in case any erorr occured in login with google
+        if (error) {
+            const err = new Error("Failed to initiate Google login");
+            err.message = error.message;
+            err.status = 400;
+            throw err;
+        }
+
+        // data.url is the Google OAuth redirect link
+        return { url: data.url };
+    } catch (error) {
+        console.log("error in googleLoginService: ", error);
+        throw error;
+    }
+}

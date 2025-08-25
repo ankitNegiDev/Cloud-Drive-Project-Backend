@@ -1,5 +1,5 @@
 import express from 'express';
-import { getCurrentUserController, loginController, logoutController, signupController } from '../controller/authController.js';
+import { getCurrentUserController, googleLoginController, loginController, logoutController, signupController } from '../controller/authController.js';
 
 const authRouter=express.Router();
 
@@ -15,5 +15,7 @@ authRouter.post('/logout', logoutController);
 // get current user.
 authRouter.get('/me', getCurrentUserController);
 
+// signup with google
+authRouter.get('/google', googleLoginController);
 
 export default authRouter;

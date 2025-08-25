@@ -16,7 +16,7 @@ eyJhbGciOiJIUzI1NiIsImtpZCI6InJ1WVhNQWlvdllGT3FkZzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiO
 
 // auth controller -- that will accept signup and login request....
 
-import { getCurrentUserService, loginService, logoutService, signupService } from "../service/authService.js";
+import { getCurrentUserService, googleLoginService, loginService, logoutService, signupService } from "../service/authService.js";
 
 // signup controller.
 
@@ -116,6 +116,28 @@ export async function getCurrentUserController(req,res){
         return res.status(error.status || 500).json({
             success: false,
             message: error.message || "Failed to fetch current user"
+        });
+    }
+}
+
+// google login controller 
+
+export async function googleLoginController(req, res) {
+    try {
+        // callin service.
+        const data = await googleLoginService();
+
+        // sending respone
+        return res.status(200).json({
+            success: true,
+            message: "Google login initiated",
+            response: data
+        });
+
+    } catch (error) {
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Google login failed"
         });
     }
 }
