@@ -1254,4 +1254,10 @@ Unit tests (optional but recommended)
 
 ---
 
+* ## Task to do --
 
+* the trigger that we setup for .... when user want to sahre the link with that user which is not existed in our auth user table -- so that we temorily store it with non-existed urse email and once if he loged in then we on behalf of us this function will run and added with userId now.
+* but its breaking our singup -- means the trigger is running at the signup because we are checking if the share table exist or not -- so but see we are using supabase and even no user is present still we have to create share table -- and the check that share table exist or not is valid so it fire the trigger but since there is no user in db so it gives us error **Database error saving new user** so to prevent this for the time being i drop this trigger -- but later when we reach to share part in frontend at that time we can research about this --
+* mostly we have two option -- one is either we use supabase identites table instead of user table
+* second is either we move this updating that share file with user id in backend -- once the user is loged in successfully.
+* when i remove this trigger the on frontend side the user is successfully signup -- and before re-directing to login we need to create a page where we ask user to open mail and confirm the email address something like -- once the email is confirm then we can re-direct user to login page --
