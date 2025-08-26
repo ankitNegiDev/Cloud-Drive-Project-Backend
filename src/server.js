@@ -10,7 +10,7 @@ const app=express();
 
 // using cors
 app.use(cors({
-    origin:["links"],
+    origin: "http://localhost:5173",
     Credentials: true
 }));
 

@@ -22,6 +22,8 @@ import { getCurrentUserService, googleLoginService, loginService, logoutService,
 
 export async function signupController (req,res){
     try {
+        console.log("req.body is : ", req.body);
+
         // destructuring req.body to get email and password.
         const {email,password,fullName,avatarUrl}=req.body;
         /** make sure the frontend send the key same as fullName not like FullName or full_name */
