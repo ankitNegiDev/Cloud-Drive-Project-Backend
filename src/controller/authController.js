@@ -16,7 +16,39 @@ eyJhbGciOiJIUzI1NiIsImtpZCI6InJ1WVhNQWlvdllGT3FkZzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiO
 
 // auth controller -- that will accept signup and login request....
 
-import { getCurrentUserService, googleLoginService, loginService, logoutService, signupService } from "../service/authService.js";
+import { getCurrentUserService, googleLoginService, loginService, logoutService, signupService, uploadAvatarService } from "../service/authService.js";
+
+// upload avatar controller --
+export async function uploadAvatarController(req,res){
+    try{
+        // getting the file or image from req.file
+        const file =req.file;
+
+        // in case if user don't send any file/image -- in this case we need to use fallback -- to generate a profile image with first letter of name just like google does.
+        if (!file) {
+            return res.status(400).json({
+                success: false,
+                message: "No avatar file provided",
+            });
+        }
+
+        // calling service 
+        const avatarPath = await uploadAvatarService(file);
+
+        return res.status(200).json({
+            success: true,
+            message: "Avatar uploaded successfully",
+            path: avatarPath,
+        });
+
+    }catch(error){
+        console.error("Error in uploadAvatarController:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
 
 // signup controller.
 

@@ -4,6 +4,32 @@ import { supabase } from "../config/supabaseClient.js";
 
 // here we need to import supabase from supabaseClient that we setup and this supabase object will have different function that we will use for singup and login.
 
+
+// uploadAvatarService
+
+export async function uploadAvatarService(file){
+    try {
+
+        // save avatar in separate folder "avatars/"
+        const { data: storageData, error: uploadError } = await supabase.storage
+            .from("files") // this is our bucket name 
+            .upload(`avatars/${Date.now()}_${file.originalname}`, file.buffer, {
+                contentType: file.mimetype,
+                upsert: false,
+            });
+
+        if (uploadError) {
+            throw new Error("Error uploading avatar to Supabase storage");
+        }
+
+        // return only the storage path (not signed URL)
+        return storageData.path;
+    } catch (error) {
+        console.error("Error in uploadAvatarService:", error);
+        throw error;
+    }
+}
+
 export async function signupService(email,password,fullName,avatarUrl){
     try{
 

@@ -1,7 +1,12 @@
 import express from 'express';
-import { getCurrentUserController, googleLoginController, loginController, logoutController, signupController } from '../controller/authController.js';
+import { getCurrentUserController, googleLoginController, loginController, logoutController, signupController, uploadAvatarController } from '../controller/authController.js';
+import { upload } from '../middleware/multer.js';
 
 const authRouter=express.Router();
+
+// we need a upload file route for uploading the avatar image -- 
+authRouter.post("/", upload.single("avatar"), uploadAvatarController);
+
 
 // route for signup
 authRouter.post('/signup', signupController);
