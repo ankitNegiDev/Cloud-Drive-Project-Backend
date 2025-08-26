@@ -17,4 +17,10 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
     throw new Error("Missing Supabase environment variables in .env");
 }
 
+// client for protected routes with service role key
 export const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+export const supabaseAuth = createClient(
+    supabaseUrl,
+    process.env.SUPABASE_PUBLISHABLE_KEY
+);

@@ -7,9 +7,17 @@ import { supabase } from "../config/supabaseClient.js";
 export async function signupService(email,password,fullName,avatarUrl){
     try{
 
+        console.log("email : ",email);
+        console.log("password : ",password);
+        console.log("fullname : ",fullName);
+        console.log("avatar url : ",avatarUrl);
+
+        // console.log("supabase is : ",supabase);
+
         // calling supabase internal function for signup.
         const {data:authData,error:authError}=await supabase.auth.signUp({email,password}); 
         console.log("auth data in signup is : ",authData);
+        console.log("auth erorr is : ",authError);
 
         // in case if error occur
         if(authError){
@@ -20,6 +28,7 @@ export async function signupService(email,password,fullName,avatarUrl){
         }
 
         const user=authData.user;
+        console.log("user in signup service is : ",user);
 
         // inserting row into profile table.
         const {error:profileError}=await supabase.from("profiles").insert({
@@ -30,6 +39,7 @@ export async function signupService(email,password,fullName,avatarUrl){
 
         // if any error occur in while creating the row in profile table.
         if(profileError){
+            console.log("profile error : ");
             const err=new Error("failed to create profile in signup service");
             err.message=profileError.message;
             err.status=400;

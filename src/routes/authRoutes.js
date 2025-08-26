@@ -4,7 +4,7 @@ import { getCurrentUserController, googleLoginController, loginController, logou
 const authRouter=express.Router();
 
 // route for signup
-authRouter.post('/singup', signupController);
+authRouter.post('/signup', signupController);
 
 // route for login or sign in
 authRouter.post('/login', loginController);
