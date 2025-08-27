@@ -30,6 +30,61 @@ export async function uploadAvatarService(file){
     }
 }
 
+
+// avatar signed url service 
+
+export async function getAvatarSignedUrlService(userId){
+    try{
+        // fetch the avatar path from profiles table
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', userId)
+            .single();
+        
+        // in case if there is not profile data
+        if (error || !profile) {
+            const err = new Error('Profile not found');
+            err.status = 404;
+            throw err;
+        }
+
+        // in case if user did not upload any avatar image... in that case we will not call this api but still a validation in backnd is good.
+        if (!profile.avatar_url) {
+            const err = new Error('No avatar uploaded');
+            err.status = 404;
+            throw err;
+        }
+
+        // generating a signed URL valid for  1 day
+        const { data, error: urlError } =  supabase
+            .storage
+            .from('files')        // this is our bucket name where we store the avatar image.
+            .createSignedUrl(profile.avatar_url, 24*60*60);
+        
+        // in case if there is error in generating the signed url in that case in fronted we will do fallback
+        if (urlError) {
+            const err = new Error('Failed to generate signed URL');
+            err.status = 500;
+            throw err;
+        }
+
+        //! bug -- we are not using await while calling createSignedUrl function in above code...
+        //! console.log("singed url is : ",data.signedUrl);
+        //! return data.signedUrl;
+        
+        // console.log("signed url is : ", data.signedUrl); 
+        return data.signedUrl;
+        
+
+
+    }catch(error){
+
+        // simple throwing error back to controller
+        throw error;
+    }
+}
+
 export async function signupService(email,password,fullName,avatarUrl){
     try{
 

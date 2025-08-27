@@ -1265,3 +1265,7 @@ Unit tests (optional but recommended)
 ---
 
 * a quick not -- see in file routes we have a route that get file from supabase private storage by id -- right but it only get the meta data -- if we need to preview it then we need to generate the singed url and for that -- what i think is best is we create another route that will generate the signed url for files on demand like when we need to preiew any file we can call that api right away.. just do a little research when ur on dashborad page in fronetnd.
+
+---
+
+* another quick note for profile avatar we need a backend route that will generat the singed url and send it to frntoned and when frotnend use that url they can access the profile avatar imge.
