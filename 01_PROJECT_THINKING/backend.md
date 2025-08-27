@@ -1261,3 +1261,4 @@ Unit tests (optional but recommended)
 * mostly we have two option -- one is either we use supabase identites table instead of user table
 * second is either we move this updating that share file with user id in backend -- once the user is loged in successfully.
 * when i remove this trigger the on frontend side the user is successfully signup -- and before re-directing to login we need to create a page where we ask user to open mail and confirm the email address something like -- once the email is confirm then we can re-direct user to login page --
+ 

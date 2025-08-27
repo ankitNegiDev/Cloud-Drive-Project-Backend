@@ -41,7 +41,21 @@ export async function signupService(email,password,fullName,avatarUrl){
         // console.log("supabase is : ",supabase);
 
         // calling supabase internal function for signup.
-        const {data:authData,error:authError}=await supabase.auth.signUp({email,password}); 
+        // const {data:authData,error:authError}=await supabase.auth.signUp({email,password}); 
+
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                // no need of this -- we had profiles table.
+                // data: {
+                //     full_name: fullName,
+                //     avatar_url: avatarUrl,
+                // },
+                emailRedirectTo: "http://localhost:5173/email-verified", // added this route so that 
+            },
+        });
+
         console.log("auth data in signup is : ",authData);
         console.log("auth erorr is : ",authError);
 
