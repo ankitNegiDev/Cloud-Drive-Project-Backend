@@ -1261,4 +1261,7 @@ Unit tests (optional but recommended)
 * mostly we have two option -- one is either we use supabase identites table instead of user table
 * second is either we move this updating that share file with user id in backend -- once the user is loged in successfully.
 * when i remove this trigger the on frontend side the user is successfully signup -- and before re-directing to login we need to create a page where we ask user to open mail and confirm the email address something like -- once the email is confirm then we can re-direct user to login page --
- 
+
+---
+
+* a quick not -- see in file routes we have a route that get file from supabase private storage by id -- right but it only get the meta data -- if we need to preview it then we need to generate the singed url and for that -- what i think is best is we create another route that will generate the signed url for files on demand like when we need to preiew any file we can call that api right away.. just do a little research when ur on dashborad page in fronetnd.
