@@ -24,7 +24,8 @@ export async function getUserProfileService(userId){
             .from("profiles")
             .select("full_name, avatar_url")
             .eq("id", userId)
-            .single();
+            // .single();
+            .maybeSingle();
 
         // if there is error in fetching profile 
         if (profileError) {

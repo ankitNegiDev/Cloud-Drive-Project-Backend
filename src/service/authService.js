@@ -57,6 +57,7 @@ export async function getAvatarSignedUrlService(userId){
         }
 
         // generating a signed URL valid for  1 day
+        // console.log("profile.avatar_url which is path is : ",profile.avatar_url);
         const { data, error: urlError } = await supabase
             .storage
             .from('files')        // this is our bucket name where we store the avatar image.

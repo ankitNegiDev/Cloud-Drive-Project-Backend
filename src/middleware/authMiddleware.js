@@ -6,7 +6,7 @@ export async function authMiddleware(req,res,next){
     try{
         // the token is expected in header.
         const authHeader = req.headers.authorization;
-        console.log("authheader is : ",authHeader);
+        // console.log("authheader is : ",authHeader);
 
         // a simple check that a token even exist or not 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {

@@ -57,6 +57,7 @@ export async function fileUploadService(userId,file,parentId){
         
         // if there is error in the saving data to db..
         if(dbError){
+            console.log("db error is : ",dbError);
             const error = new Error("error occured in saving the file data to db in supabase");
             error.status = 500; // since its the supabase db issue
             throw error;
