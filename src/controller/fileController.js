@@ -13,7 +13,9 @@ export async function uploadFileController(req,res){
         const file=req.file;
 
         // now getting the parentId from the req.body because its client responsibility to send parent id which will decide inside which folder this file will be uploded.
-        const parentId=req.body.parentId || null; // a fallback parent id for root
+        let parentId=req.body.parentId;
+        // console.log("typeof parent id is : ",typeof parentId); //! bug was type of parent id is string -when it is root folder means value is "null" not null.
+        parentId= parentId==="null" ? null :parentId;
 
         // calling service
         const result = await fileUploadService (userId,file,parentId);
