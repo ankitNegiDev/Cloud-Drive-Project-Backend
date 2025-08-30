@@ -22,7 +22,7 @@ apiRouter.use('/folder',folderRouter);
 apiRouter.use('/file',fileRouter);
 
 // if the api strt with /api/item -- then send all request to itemRouter.
-apiRouter.use('/item',itemRouter);
+apiRouter.use('/items',itemRouter);
 
 // if the api start with /api/trash -- then send all request to trashRouter.
 apiRouter.use('/trash',trashRouter);
