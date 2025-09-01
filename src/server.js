@@ -10,7 +10,8 @@ const app=express();
 
 // using cors
 app.use(cors({
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
+    origin:"https://cloud-drive-project-frontend-ioyp.vercel.app",
     Credentials: true
 }));
 
