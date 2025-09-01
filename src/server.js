@@ -9,10 +9,27 @@ import apiRouter from './routes/apiRoutes.js';
 const app=express();
 
 // using cors
+// app.use(cors({
+//     origin: "http://localhost:5173",
+//     // origin:"https://cloud-drive-project-frontend-ioyp.vercel.app",
+//     Credentials: true
+// }));
+
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://cloud-drive-project-frontend-ioyp.vercel.app"
+];
+
 app.use(cors({
-    // origin: "http://localhost:5173",
-    origin:"https://cloud-drive-project-frontend-ioyp.vercel.app",
-    Credentials: true
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("CORS not allowed"));
+        }
+    },
+    credentials: true
 }));
 
 // inbuilt middleware
