@@ -1,6 +1,6 @@
 // file controller that will handel all requst for a file.
 
-import { deleteFileService, fileUploadService, getFileByIdService, getFilesByParentIdService, renameFileService } from "../service/fileService.js";
+import { deleteFileService, fileUploadService, getFileByIdService, getFilesByParentIdService, getFileSignedUrlService, renameFileService } from "../service/fileService.js";
 
 // (1) upload file..
 
@@ -146,6 +146,31 @@ export async function deleteFileController(req,res){
         return res.status(error.status || 500).json({
             success: false,
             mesasge: error.mesasge || "Internal server erorr"
+        });
+    }
+}
+
+
+// for signed url 
+
+export async function getFileSignedUrlController(req, res) {
+    try {
+        const { filePath } = req.query;
+        if (!filePath) {
+            return res.status(400).json({ success: false, message: "filePath is required" });
+        }
+
+        const signedUrl = await getFileSignedUrlService(filePath);
+
+        return res.status(200).json({
+            success: true,
+            message: "Signed URL generated successfully",
+            signedUrl,
+        });
+    } catch (error) {
+        return res.status(error.status || 500).json({
+            success: false,
+            message: error.message || "Internal server error",
         });
     }
 }

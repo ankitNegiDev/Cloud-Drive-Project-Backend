@@ -1,7 +1,7 @@
 // all routes realted to file handeling
 
 import express from 'express';
-import { deleteFileController, getFileByIdController, getFilesByParentIdController, renameFileController, uploadFileController } from '../controller/fileController.js';
+import { deleteFileController, getFileByIdController, getFilesByParentIdController, getFileSignedUrlController, renameFileController, uploadFileController } from '../controller/fileController.js';
 import { upload } from '../middleware/multer.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -22,5 +22,11 @@ fileRouter.put('/:id', authMiddleware, renameFileController);
 
 // (5) delete file using id soft deelte
 fileRouter.delete('/:id', authMiddleware, deleteFileController);
+
+
+// (6) creating a route that will generate the signed url for files -- (like images,video,pdf etc)
+// routes/fileRoutes.js
+fileRouter.get("/signed-url", authMiddleware, getFileSignedUrlController);
+
 
 export default fileRouter;

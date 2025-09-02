@@ -195,3 +195,21 @@ export async function deleteFileService(userId,fileId){
         throw error;
     }
 }
+
+
+// signed url 
+
+export async function getFileSignedUrlService(filePath) {
+    const { data, error } = await supabase
+        .storage
+        .from("files")
+        .createSignedUrl(filePath, 24 * 60 * 60); // 1 day
+
+    if (error) {
+        const err = new Error("Failed to generate signed URL");
+        err.status = 500;
+        throw err;
+    }
+
+    return data.signedUrl;
+}
