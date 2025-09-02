@@ -6,6 +6,7 @@ import fileRouter from './fileRoutes.js';
 import itemRouter from './itemRoutes.js';
 import trashRouter from './trashRoutes.js';
 import shareRouter from './shareRoutes.js';
+import searchRouter from './searchRoutes.js';
 
 const apiRouter=express.Router();
 
@@ -31,5 +32,5 @@ apiRouter.use('/trash',trashRouter);
 apiRouter.use('/shares',shareRouter);
 
 // if the api start with /api/search -- then send all request to search rotuesr.
-
+apiRouter.use('/search',searchRouter);
 export default apiRouter;
