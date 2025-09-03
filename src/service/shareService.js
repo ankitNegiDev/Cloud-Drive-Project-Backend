@@ -1,6 +1,6 @@
 // share servicde -- 
 
-import { error } from "console";
+
 import { supabase } from "../config/supabaseClient.js";
 import { randomBytes } from 'crypto';
 
@@ -16,10 +16,12 @@ export async function getShareInfoByItemIdService(ownerId, itemId) {
             .eq("owner_id", ownerId);
 
         if (error) {
-            const err = new Error("Error fetching share info");
+            const err = new Error(error.message || "Error fetching share info");
             err.status = error.status || 500;
             throw err;
         }
+
+        console.log("data for share info in service is : ",data);
 
         return data;
     } catch (error) {
@@ -268,7 +270,7 @@ export async function deleteRestrictedShareService(ownerId,itemId){
 
 
 // (3) access share 
-
+/*
 export async function accessRestrictedShareService(userId,shareId){
     try{
         // getting the data fro mthe share table using sahre id.
@@ -317,11 +319,13 @@ export async function accessRestrictedShareService(userId,shareId){
 
         // now generating the signed url since our supabase storage is private.
         let signedUrl = null;
+        console.log("Item path:", item.path);
+        console.log("Item type:", item.type);
         if (item.type === "file") {
-            const { data: signedData, error: signedError } = supabase
+            const { data: signedData, error: signedError } = await supabase
                 .storage
                 .from("files")
-                .createSignedUrl(item.path, 60);
+                .createSignedUrl(item.path, 60*60); // for 1 hr
 
             if (signedError) throw new Error("Could not generate signed URL");
             signedUrl = signedData.signedUrl;
@@ -334,10 +338,86 @@ export async function accessRestrictedShareService(userId,shareId){
         throw error;
     }
 }
+*/
+
+
+// (3) Access a restricted share 
+export async function accessRestrictedShareService(userId, shareId) {
+    try {
+        // Fetch the share info
+        const { data: share, error: shareError } = await supabase
+            .from("shares")
+            .select("id, item_id, shared_with, shared_email, role, expires_at")
+            .eq("id", shareId)
+            .eq("share_type", "restricted")
+            .single();
+
+        if (shareError || !share) {
+            const err = new Error("Error fetching share data");
+            err.status = shareError?.status || 500;
+            throw err;
+        }
+
+        // Check expiry
+        if (share.expires_at && new Date(share.expires_at) < new Date()) {
+            const err = new Error("Share has expired");
+            err.status = 401;
+            throw err;
+        }
+
+        // Check permission
+        if (share.shared_with !== userId) {
+            const err = new Error("You do not have access to this item");
+            err.status = 403;
+            throw err;
+        }
+
+        // Fetch item info
+        const { data: item, error: itemError } = await supabase
+            .from("items")
+            .select("*")
+            .eq("id", share.item_id)
+            .single();
+
+        if (itemError || !item) {
+            const err = new Error("Error fetching item data");
+            err.status = itemError?.status || 500;
+            throw err;
+        }
+
+        let signedUrl = null;
+        console.log("item is : ",item);
+
+        if (item.type === "file") {
+            // Encode the path to handle spaces or special characters
+            const encodedPath = encodeURI(item.path);
+            console.log("encoded path is : ",encodedPath);
+
+            const { data: signedData, error: signedError } = await supabase
+                .storage
+                .from("files")
+                .createSignedUrl(encodedPath, 60 * 60); // 1 hour
+
+            if (signedError || !signedData?.signedUrl) {
+                throw new Error("Could not generate signed URL");
+            }
+            console.log("signed data is : ",signedData);
+
+            signedUrl = signedData.signedUrl;
+        }
+
+        return { item, signedUrl, role: share.role };
+    } catch (error) {
+        console.log("Error in accessRestrictedShareService:", error);
+        throw error;
+    }
+}
+
 
 
 // (4) List of items shared with me
 
+/*
 export async function sharedWithMeService(userId){
     try{
         const { data, error } = await supabase
@@ -351,6 +431,85 @@ export async function sharedWithMeService(userId){
 
     }catch(error){
         console.log("Error in sharedWithMeService and error is : ", error);
+        throw error;
+    }
+}
+*/
+
+// updated the shareWithMe searvice
+
+export async function sharedWithMeService(userId) {
+    try {
+        //  Getting all shares restricted to this current user ---- this will return all files that are shared with the current user --- (userId which is coming from auth middleware --> which is nothing but the loged in user)
+        const shareResult = await supabase
+            .from("shares")
+            .select(`
+                id,
+                item_id,
+                owner_id,
+                role,
+                expires_at,
+                shared_with,
+                items (
+                    id,
+                    name,
+                    type,
+                    size,
+                    mime_type
+                )
+            `)
+            .eq("share_type", "restricted")
+            .eq("shared_with", userId);
+
+        if (shareResult.error) {
+            throw shareResult.error;
+        }
+
+        const shares = shareResult.data;
+
+        // here we are running a map(loop) on shares object which contain all the user that share files with this current user -- and we are returning their owner id
+        const ownerIds = shares.map(function (share) {
+            return share.owner_id;
+        });
+
+        // now once we get owner id then -- we need only unique owner id -- it might be possible that same user A shared 3 files with B user so in that case we will have 3 owner id but since we know onwer id is same so we can skip rest 2..
+        const uniqueOwnerIds = Array.from(new Set(ownerIds));
+
+        // Now based on these unique owner id -- we are  getting the id,full name from the profiles table.
+        const profileResult = await supabase
+            .from("profiles")
+            .select("id, full_name")
+            .in("id", uniqueOwnerIds);
+
+        if (profileResult.error) {
+            throw profileResult.error;
+        }
+
+        const profiles = profileResult.data;
+
+        // Formating  the data for frontend so that it won't conflict with normal data that is sent when we are showing file/folder on the dashboard for like files/folder inside a folder
+        const formattedData = shares.map(function (share) {
+            const ownerProfile = profiles.find(function (profile) {
+                return profile.id === share.owner_id;
+            });
+
+            return {
+                id: share.id,               // share row id
+                name: share.items.name,
+                type: share.items.type,
+                size: share.items.size,
+                mime_type: share.items.mime_type,
+                owner: ownerProfile ? ownerProfile.full_name : "Unknown",
+                role: share.role,
+                expires_at: share.expires_at,
+                signedUrl: share.items.signedUrl || null // can populate later
+            };
+        });
+
+        return formattedData;
+
+    } catch (error) {
+        console.log("Error in sharedWithMeService:", error);
         throw error;
     }
 }
