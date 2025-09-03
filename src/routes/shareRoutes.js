@@ -6,6 +6,10 @@ import { accessPublicShareController, accessRestrictedShareController, createPub
 
 const shareRouter=express.Router();
 
+// (4) List of all files/folders shared with me
+shareRouter.get('/shared-with-me', authMiddleware, sharedWithMeController);
+
+
 // GET /share/:itemId ---> to fetch all share info for an item
 shareRouter.get("/:itemId", authMiddleware, getShareInfoByItemIdController);
 
@@ -37,8 +41,7 @@ shareRouter.delete('/restricted/:itemId', authMiddleware, deleteRestrictedShareC
  */
 shareRouter.get('/restricted/:shareId', authMiddleware, accessRestrictedShareController);
 
-// (4) List of all files/folders shared with me
-shareRouter.get('/shared-with-me', authMiddleware, sharedWithMeController);
+
 
 export default shareRouter;
 
