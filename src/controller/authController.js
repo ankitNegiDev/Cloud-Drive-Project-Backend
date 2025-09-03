@@ -16,7 +16,7 @@ eyJhbGciOiJIUzI1NiIsImtpZCI6InJ1WVhNQWlvdllGT3FkZzAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiO
 
 // auth controller -- that will accept signup and login request....
 
-import { getAvatarSignedUrlService, getCurrentUserService, googleLoginService, loginService, logoutService, signupService, uploadAvatarService } from "../service/authService.js";
+import { getAvatarSignedUrlService, getCurrentUserService, googleLoginService, linkSharesForLoggedInUser, loginService, logoutService, signupService, uploadAvatarService } from "../service/authService.js";
 
 // upload avatar controller --
 export async function uploadAvatarController(req,res){
@@ -96,6 +96,11 @@ export async function signupController (req,res){
         const data = await signupService (email,password,fullName,avatarUrl);
 
         console.log("response of singup service in controller before returning to user is : ",data);
+
+
+        // Link any shares that were created for this email before the user existed
+        await linkSharesForLoggedInUser(data.user.id, data.user.email);
+
         return res.status(200).json({
             success:true,
             message: "User signedUp successfully",
@@ -120,6 +125,11 @@ export async function loginController(req,res){
         const data=await loginService(email,password);
 
         console.log("repsone of login service in login controller before returning to user is : ",data);
+
+
+        // Link any shares created for this email before login
+        await linkSharesForLoggedInUser(data.user.id, data.user.email);
+
 
         return res.status(200).json({
             success:true,
