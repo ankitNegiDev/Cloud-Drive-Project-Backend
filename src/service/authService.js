@@ -315,3 +315,44 @@ export async function googleLoginService() {
         throw error;
     }
 }
+
+
+
+// -----
+export async function linkSharesForLoggedInUser(userId, userEmail) {
+    try {
+        // Step 1: Check if any shares exist for this email
+        const { data: shares, error: fetchError } = await supabase
+            .from("shares")
+            .select("id")
+            .eq("shared_email", userEmail);
+
+        if (fetchError) {
+            console.error("Error fetching shares for linking:", fetchError);
+            return [];
+        }
+
+        if (!shares || shares.length === 0) {
+            console.log(`No unlinked shares found for ${userEmail}`);
+            return [];
+        }
+
+        // Step 2: Update only if shares exist
+        const { data: updatedShares, error: updateError } = await supabase
+            .from("shares")
+            .update({ shared_with: userId, shared_email: null })
+            .eq("shared_email", userEmail);
+
+        if (updateError) {
+            console.error("Error linking shares:", updateError);
+            return [];
+        }
+
+        console.log(`Linked ${updatedShares.length} shares for ${userEmail}`);
+        return updatedShares;
+
+    } catch (err) {
+        console.error("Unexpected error in linkSharesForLoggedInUser:", err);
+        return [];
+    }
+}
