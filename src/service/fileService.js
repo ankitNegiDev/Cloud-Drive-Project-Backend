@@ -21,9 +21,24 @@ export async function fileUploadService(userId,file,parentId){
     try{
         // uploading file to supabase storage.
         // awat supabase.storage.from("name of bucket").upload(path,file.buffer,options); 
+        /*const { data: storageData, error: uploadError } = await supabase.storage
+            .from("files") // bucket name
+            .upload(`Data/${userId}/${Date.now()}_${file.originalname}`, file.buffer, {
+                contentType: file.mimetype,
+                upsert: false,
+            });
+        */
+
+        // Determine folder based on mime type
+        let folder = "unknown";
+        if (file.mimetype.startsWith("image/")) folder = "images";
+        else if (file.mimetype.startsWith("video/")) folder = "videos";
+        else if (file.mimetype === "application/pdf") folder = "pdfs";
+
+        // Upload file to Supabase storage
         const { data: storageData, error: uploadError } = await supabase.storage
             .from("files") // bucket name
-            .upload(`${userId}/${Date.now()}_${file.originalname}`, file.buffer, {
+            .upload(`UserData/${userId}/${folder}/${Date.now()}_${file.originalname}`, file.buffer, {
                 contentType: file.mimetype,
                 upsert: false,
             });
