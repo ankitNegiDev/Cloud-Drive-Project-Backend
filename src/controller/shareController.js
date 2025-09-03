@@ -201,6 +201,7 @@ export async function sharedWithMeController(req,res){
     try{
         // getting the userid
         const userId=req.user.id;
+        console.log("user id in sharedwith me controller is : ",userId);
 
         // calling service
         const sharedItems = await sharedWithMeService(userId);
