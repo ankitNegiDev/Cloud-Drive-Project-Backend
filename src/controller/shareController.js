@@ -1,7 +1,25 @@
 // share controller --
 
-import { accessPublicShareService, accessRestrictedShareService, createPublicShareService, createRestrictedShareService, deletePublicShareService, deleteRestrictedShareService, sharedWithMeService } from "../service/shareService.js";
+import { accessPublicShareService, accessRestrictedShareService, createPublicShareService, createRestrictedShareService, deletePublicShareService, deleteRestrictedShareService, getShareInfoByItemIdService, sharedWithMeService } from "../service/shareService.js";
 
+// getting the share info of a single item
+export async function getShareInfoByItemIdController(req, res) {
+    try {
+        const { itemId } = req.params;
+        const ownerId = req.user.id; // current logged-in user
+
+        const shares = await getShareInfoByItemIdService(ownerId, itemId);
+
+        if (!shares || shares.length === 0) {
+            return res.status(404).json({ message: "No share info found for this item" });
+        }
+
+        return res.json({ data: shares });
+    } catch (error) {
+        console.error("Error in getShareInfoByItemIdController:", error);
+        return res.status(error.status || 500).json({ message: error.message });
+    }
+}
 
 // ---- Public share ----
 

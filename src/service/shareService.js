@@ -5,6 +5,30 @@ import { supabase } from "../config/supabaseClient.js";
 import { randomBytes } from 'crypto';
 
 
+// getting the share info of a item
+export async function getShareInfoByItemIdService(ownerId, itemId) {
+    try {
+        // fetch all shares for the item
+        const { data, error } = await supabase
+            .from("shares")
+            .select("id, item_id, owner_id, share_type, shared_with, shared_email, token, role, expires_at, created_at")
+            .eq("item_id", itemId)
+            .eq("owner_id", ownerId);
+
+        if (error) {
+            const err = new Error("Error fetching share info");
+            err.status = error.status || 500;
+            throw err;
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error in getShareInfoByItemIdService:", error);
+        throw error;
+    }
+} 
+
+
 // (1) create sharable link - public
 
 // here ownerId is same the userId -- means -- the current user that is loged in is the owner of this file for which he is gneerating the link
@@ -122,10 +146,10 @@ export async function accessPublicShareService(token){
         }
 
         // now creating the signed url -- so that user can directly access the file
-        const { data: signedUrlData, error: signedUrlError } = supabase
+        const { data: signedUrlData, error: signedUrlError } = await supabase
             .storage
             .from('files') // the supbase private storage name is 'files'
-            .createSignedUrl(item.path, 60); // valid only for 60 sec or we can change it later
+            .createSignedUrl(item.path, 60*60); // valid only for 1 hrs or we can change it later
         
         
         // in case if we got error in generating the signed url
@@ -135,11 +159,19 @@ export async function accessPublicShareService(token){
             throw err;
         }
 
+        console.log("sigened url data is  : ",signedUrlData);
+
         // now return the file/folder data as item and signedurl data as signedUrlData
+        // return {
+        //     item,
+        //     signedUrlData
+        // }
+
         return {
             item,
-            signedUrlData
-        }
+            signedUrl: signedUrlData.signedUrl,
+            expiresIn: "1 hour"
+        };
         
     }catch(error){
         console.log("error occured in accessPublicShareLinkService and error is : ", error);

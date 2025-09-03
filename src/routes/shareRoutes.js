@@ -2,9 +2,12 @@
 
 import express from 'express';
 import { authMiddleware } from "../middleware/authMiddleware.js";
-import { accessPublicShareController, accessRestrictedShareController, createPublicShareController, createRestrictedShareController, deletePublicShareController, deleteRestrictedShareController, sharedWithMeController } from '../controller/shareController.js';
+import { accessPublicShareController, accessRestrictedShareController, createPublicShareController, createRestrictedShareController, deletePublicShareController, deleteRestrictedShareController, getShareInfoByItemIdController, sharedWithMeController } from '../controller/shareController.js';
 
 const shareRouter=express.Router();
+
+// GET /share/:itemId ---> to fetch all share info for an item
+shareRouter.get("/:itemId", authMiddleware, getShareInfoByItemIdController);
 
 //* (A) Routes for public sharing...
 
