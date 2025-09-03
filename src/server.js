@@ -18,7 +18,7 @@ const app=express();
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://cloud-drive-project-frontend-ioyp.vercel.app"
+    "https://cloud-drive-project-frontend.vercel.app"
 ];
 
 app.use(cors({
